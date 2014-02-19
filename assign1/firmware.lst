@@ -1,0 +1,104 @@
+   1              		.file	"firmware.c"
+   2              		.section	.text.emulate_time,"ax",%progbits
+   3              		.align	2
+   4              		.global	emulate_time
+   6              	emulate_time:
+   7              		@ args = 0, pretend = 0, frame = 0
+   8              		@ frame_needed = 0, uses_anonymous_args = 0
+   9 0000 0008A0E1 		mov	r0, r0, asl #16
+  10 0004 30309FE5 		ldr	r3, .L6
+  11 0008 2008A0E1 		mov	r0, r0, lsr #16
+  12 000c 900303E0 		mul	r3, r0, r3
+  13 0010 30402DE9 		stmfd	sp!, {r4, r5, lr}
+  14 0014 0338A0E1 		mov	r3, r3, asl #16
+  15 0018 2358A0E1 		mov	r5, r3, lsr #16
+  16 001c 0040A0E3 		mov	r4, #0
+  17 0020 080000EA 		b	.L2
+  18              	.L3:
+  19 0024 FEFFFFEB 		bl	DisplayUpdateSync
+  20              	.L2:
+  21 0028 0438A0E1 		mov	r3, r4, asl #16
+  22 002c 230855E1 		cmp	r5, r3, lsr #16
+  23 0030 014084E2 		add	r4, r4, #1
+  24 0034 0700008A 		bhi	.L3
+  25 0038 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+  26              	.L7:
+  27              		.align	2
+  28              	.L6:
+  29 003c 50C30000 		.word	50000
+  31              		.section	.rodata.str1.4,"aMS",%progbits,1
+  32              		.align	2
+  33              	.LC0:
+  34 0000 48656C6C 		.ascii	"Hello world\000"
+  34      6F20776F 
+  34      726C6400 
+  35              		.section	.text.hello_world,"ax",%progbits
+  36              		.align	2
+  37              		.global	hello_world
+  39              	hello_world:
+  40              		@ args = 0, pretend = 0, frame = 0
+  41              		@ frame_needed = 0, uses_anonymous_args = 0
+  42 0000 10402DE9 		stmfd	sp!, {r4, lr}
+  43 0004 6400A0E3 		mov	r0, #100
+  44 0008 FEFFFFEB 		bl	malloc
+  45 000c FEFFFFEB 		bl	DisplayInit
+  46 0010 0100A0E3 		mov	r0, #1
+  47 0014 FEFFFFEB 		bl	DisplayOn
+  48 0018 0140A0E3 		mov	r4, #1
+  49              	.L9:
+  50 001c FEFFFFEB 		bl	DisplayErase
+  51 0020 0100A0E3 		mov	r0, #1
+  52 0024 FEFFFFEB 		bl	emulate_time
+  53 0028 0A00A0E3 		mov	r0, #10
+  54 002c 0010A0E1 		mov	r1, r0
+  55 0030 38209FE5 		ldr	r2, .L14
+  56 0034 FEFFFFEB 		bl	DisplayString
+  57 0038 0430A0E1 		mov	r3, r4
+  58 003c 0100A0E3 		mov	r0, #1
+  59 0040 0A10A0E3 		mov	r1, #10
+  60 0044 1420A0E3 		mov	r2, #20
+  61 0048 FEFFFFEB 		bl	DisplayNum
+  62 004c 014084E2 		add	r4, r4, #1
+  63 0050 FEFFFFEB 		bl	DisplayUpdateSync
+  64 0054 0100A0E3 		mov	r0, #1
+  65 0058 FEFFFFEB 		bl	emulate_time
+  66 005c 650054E3 		cmp	r4, #101
+  67 0060 0500001A 		bne	.L9
+  68 0064 04009FE5 		ldr	r0, .L14
+  69 0068 1040BDE8 		ldmfd	sp!, {r4, lr}
+  70 006c FEFFFFEA 		b	free
+  71              	.L15:
+  72              		.align	2
+  73              	.L14:
+  74 0070 00000000 		.word	.LC0
+  76              		.section	.text.main,"ax",%progbits
+  77              		.align	2
+  78              		.global	main
+  80              	main:
+  81              		@ args = 0, pretend = 0, frame = 0
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83 0000 04E02DE5 		str	lr, [sp, #-4]!
+  84 0004 FEFFFFEB 		bl	hello_world
+  85 0008 0000A0E3 		mov	r0, #0
+  86 000c 04F09DE4 		ldr	pc, [sp], #4
+  88              		.ident	"GCC: (GNU) 4.0.2"
+DEFINED SYMBOLS
+                            *ABS*:00000000 firmware.c
+     /tmp/cc40alTd.s:6      .text.emulate_time:00000000 emulate_time
+     /tmp/cc40alTd.s:9      .text.emulate_time:00000000 $a
+     /tmp/cc40alTd.s:29     .text.emulate_time:0000003c $d
+     /tmp/cc40alTd.s:39     .text.hello_world:00000000 hello_world
+     /tmp/cc40alTd.s:42     .text.hello_world:00000000 $a
+     /tmp/cc40alTd.s:74     .text.hello_world:00000070 $d
+     /tmp/cc40alTd.s:80     .text.main:00000000 main
+     /tmp/cc40alTd.s:83     .text.main:00000000 $a
+
+UNDEFINED SYMBOLS
+DisplayUpdateSync
+malloc
+DisplayInit
+DisplayOn
+DisplayErase
+DisplayString
+DisplayNum
+free

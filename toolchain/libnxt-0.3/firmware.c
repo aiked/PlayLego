@@ -126,25 +126,21 @@ nxt_firmware_flash(nxt_t *nxt, char *fw_path)
   for (i = 0; i < 1024; i++) //256*1024; i += 256)
     {
       char buf[256];
-      int ret,j;
+      int ret;
 
       memset(buf, 0, 256);
       ret = read(fd, buf, 256);
 
-      if (ret == 256)
+      if (ret != -1)
         NXT_ERR(nxt_flash_block(nxt, i, buf));
 
-      else if (ret != -1 && ret < 256)
+      if (ret < 256)
         {
-		  for (j=ret;j<256;j++) {
-			  buf[j]=0xFF;
-		  }
-		  NXT_ERR(nxt_flash_block(nxt, i, buf));
           close(fd);
           NXT_ERR(nxt_flash_finish(nxt));
-          return NXT_OK;
+
+          return ret == -1 ? NXT_FILE_ERROR : NXT_OK;
         }
-	  else return NXT_FILE_ERROR;
 
       NXT_ERR(nxt_flash_block(nxt, i, buf));
     }

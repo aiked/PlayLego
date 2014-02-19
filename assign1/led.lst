@@ -1,0 +1,41 @@
+   1              		.file	"led.c"
+   2              		.section	.text.LED,"ax",%progbits
+   3              		.align	2
+   4              		.global	LED
+   6              	LED:
+   7              		@ args = 0, pretend = 0, frame = 0
+   8              		@ frame_needed = 0, uses_anonymous_args = 0
+   9              		@ link register save eliminated.
+  10 0000 FF0000E2 		and	r0, r0, #255
+  11 0004 010050E3 		cmp	r0, #1
+  12              		@ lr needed for prologue
+  13 0008 FF1001E2 		and	r1, r1, #255
+  14 000c 0122A003 		moveq	r2, #268435456
+  15 0010 0800000A 		beq	.L6
+  16 0014 0225A0E3 		mov	r2, #8388608
+  17 0018 0800003A 		bcc	.L6
+  18 001c 020050E3 		cmp	r0, #2
+  19 0020 0121A013 		movne	r2, #1073741824
+  20 0024 0222A003 		moveq	r2, #536870912
+  21              	.L6:
+  22 0028 18309FE5 		ldr	r3, .L12
+  23 002c 000051E3 		cmp	r1, #0
+  24 0030 102083E4 		str	r2, [r3], #16
+  25 0034 002083E5 		str	r2, [r3, #0]
+  26 0038 0C309F15 		ldrne	r3, .L12+4
+  27 003c 24308302 		addeq	r3, r3, #36
+  28 0040 002083E5 		str	r2, [r3, #0]
+  29 0044 1EFF2FE1 		bx	lr
+  30              	.L13:
+  31              		.align	2
+  32              	.L12:
+  33 0048 00F4FFFF 		.word	-3072
+  34 004c 30F4FFFF 		.word	-3024
+  36              		.ident	"GCC: (GNU) 4.0.2"
+DEFINED SYMBOLS
+                            *ABS*:00000000 led.c
+     /tmp/ccUCjqZ4.s:6      .text.LED:00000000 LED
+     /tmp/ccUCjqZ4.s:10     .text.LED:00000000 $a
+     /tmp/ccUCjqZ4.s:33     .text.LED:00000048 $d
+
+NO UNDEFINED SYMBOLS
