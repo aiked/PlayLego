@@ -1,0 +1,298 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body>
+    <div style="text-align: justify;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">CS325 Assignment 1: Hello World!</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><br style="font-family:
+        Helvetica,Arial,sans-serif;">
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span><span style="font-family: Helvetica,Arial,sans-serif;">The
+          goal
+          of this assignment is to help you become familiar with the
+          lego nxt
+          platform and the tools for programming the ARM processors
+          under unix.</span><span style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;"></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;">
+        </span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;">1. Get a lego kit from the lab!</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>For this assignment you will need the lego nxt
+        controller,
+        the light sensor, the charger for the controller battery, and a
+        usb cable. Details on the procedure you need to follow for
+        getting access to these will be given in class.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        Create a file <span style="font-style: italic;">as1_readme.txt
+        </span>that will contain the answers to questions below.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"></span>2. Experiment with the kit</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span>Read the following introductory lego documentation:</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font>
+    </div>
+    <ul style="text-align: justify;">
+      <li><font style="font-family: Helvetica,Arial,sans-serif;"
+          size="-1"><a href="../reading/lego_nxt_hw_dev_kit.pdf">Lego
+            Mindstorms Hardware Developer Kit</a>: read pages 1-7, 11
+          and quickly go through the rest.</font></li>
+    </ul>
+    <div style="text-align: justify;">
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">The
+kit
+        is currently running the original firmware. Charge the battery,
+        turn it on, and experiment with the menus and sensors. This is
+        the only
+        time you can expertiment with the default/original firmware. In
+        the
+        steps below you will replace it with custom firmware and you
+        will not
+        be able to re-use the original one (unless you re-load it).</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+            Answer the following questions</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>2.1 How many processors are there in the
+        controller. What architecture (ISA) and speed supports each
+        processor? </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        2.2 What type of memory and how much of each type is accessible
+        by each processor?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        2.3 What sensors come with the kit? To which processor can each
+        sensor be connected?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        2.4 Why do some of the sensors connect on one and not the other
+        processor?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+            3. Install the unix toolchain</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;"></span></span>For
+this
+        (and most subsequent) assignments you will need a system running
+        Linux. Many flavors (and kernel versions) will work, but the
+        assignments (the toolchain mostly) have been tested with Ubuntu.
+        You
+        may use the systems that are already setup for this purposes in
+        the lab
+        (&#915;020).</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">&nbsp;<span
+          style="font-weight: bold;"><span style="font-weight: bold;"></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>Copy the file ~hy428/files/toolchain.tar.gz in
+        your home
+        account and unpack it. This directory tree contains the
+        utitlities
+        needed for compiling and downloading code (firmware) to the lego
+        NXT.The toolchain is self-contained and you should not need any
+        files
+        outside this directory.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+            4. Build a very simple first firmware</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">Copy
+        the file ~hy428/files/as1_helloworld.tar.gz to your home account
+        and unpack
+        it. This directory tree contains the skeleton of a very simple
+        firmware program. </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        To build the firmware:</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - Go to the as1_helloworld directory</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - Edit the Makefile and change the "PREFIX" variable to point to
+        the directory of the toolchain in your account</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - make clean; make</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;">Answer the following questions</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span>4.1 In which file is the main function?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        4.2 In which directory(ies) are located the .h files used by the
+        firmware .c files?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        4.3 Which path(s) does gcc use for locating each type of file?
+        (use --print-search-paths)</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        4.4 What are the targets in the Makefile? What does each target
+        do?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span><span style="font-weight: bold;">5. Download the new
+          firmware</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span>To download the firmware:</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - Connect the controller to the usb port.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - The controller has a hidden button under the usb port. Use a
+        pin
+        to press this button for 3 seconds. Wait for 5 more seconds (or
+        so). You will hear a characteristic
+        periodic beep sound.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - Type "make download"</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        - You should get a message that the firmware was downloaded
+        succesfully
+        and is running. A fairly useless firmware is now running!</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">Answer the following questions</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span>5.1 On which processor is this firmware downloaded? What
+        is running on the other processor?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        5.2 Can you turn off the controller using the original on/off
+        button? Yes or no and why?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">6.
+            Your first firmware</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        6.1 Modify the firmware to display "Hello World!" 100 times.You
+        will
+        need to examine the code for the display, to figure out which
+        functions
+        to use and how.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        6.2 Modify your firmware to display "Hello World!" and blink at
+        about
+        1sec intervals. Write a function that delays for about 1ms and
+        then use
+        this.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        6.3 Move your helloworld function in a separate helloworld.c
+        file and modify the Makefile accordingly.<br>
+        6.4 Make the led of the light sensor blink before and after the
+        "Hello
+        World!" message is displayed, using the provided led.h module.<br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"><span style="font-weight: bold;"></span></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+            <span style="font-weight: bold;">Answer t</span></span></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">he following questions</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">6.4 What happens when
+        main returns?</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        6.5 What happens if you press the orange button while your
+        firmware is running? Explain briefly.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">6.6 What happens if you press the orange button after
+        your firmware has stopped running? Explain briefly.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">6.7
+(optional)
+        In your delay function, you use some counting variable. What
+        happens if you declare this to be volatile? Explain briefly.</font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"><span style="font-weight: bold;"><span
+                style="font-weight: bold;"></span></span></span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;"><span
+              style="font-weight: bold;"><span style="font-weight:
+                bold;">
+              </span></span>7. Submit</span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>Submit the as1_answers.txt file with all your
+        answers and
+        the files of your final firmware. Also, follow the procedure
+        outlined
+        in class for returning the components you used in this
+        assignment. Use
+        the submit procedure in the
+        Policies section.</font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;"></span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font>
+    </div>
+    <hr style="width: 100%; height: 2px; margin-left: 0px; margin-right:
+      0px;">
+    <div style="text-align: justify;">
+    </div>
+    <div style="text-align: right;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">&copy; copyright
+        University of Crete, Greece. Last Modified: Jan 31, 2010</font><br>
+    </div>
+  </body>
+</html>
