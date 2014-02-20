@@ -30,9 +30,9 @@ VECTOR_LOCATION = VECTORS_IN_RAM	# - Exception vectors in RAM:
 ########################################################################
 # Files
 ########################################################################
-SRC  += display.c Cstartup_SAM7.c led.c $(TARGET).c
+SRC  += display.c Cstartup_SAM7.c led.c helloworld.c $(TARGET).c
 ASRC  = Cstartup.S 
-COBJ  = $(SRC:.c=.o) 
+COBJ  = $(SRC:.c=.o)
 AOBJ  = $(ASRC:.S=.o)
 LST   = $(ASRC:.S=.lst) $(SRC:.c=.lst) 
 
@@ -45,7 +45,8 @@ LST   = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 # !michath --print-search-paths IS -print-search-dirs
 
-CFLAGS =
+# CFLAGS = -print-search-dirs
+CFLAGS +=
 CFLAGS += -D$(RUN_MODE) -DSAM7S256 -DPROTOTYPE_PCB_4 -D__ICCARM__ -DNEW_MENU -D__WinARM__ -D__WINARMSUBMDL_$(SUBMDL)__ \
           -mcpu=$(MCU) -Os -Wall -Wcast-align -Wimplicit -Wpointer-arith -Wswitch -Wredundant-decls \
           -Wreturn-type -Wshadow -Wunused -Wnested-externs \
