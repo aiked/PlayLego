@@ -30,7 +30,7 @@ VECTOR_LOCATION = VECTORS_IN_RAM	# - Exception vectors in RAM:
 ########################################################################
 # Files
 ########################################################################
-SRC  += display.c Cstartup_SAM7.c led.c helloworld.c $(TARGET).c
+SRC  += display.c Cstartup_SAM7.c led.c helloworld.c  $(TARGET).c
 ASRC  = Cstartup.S 
 COBJ  = $(SRC:.c=.o)
 AOBJ  = $(ASRC:.S=.o)

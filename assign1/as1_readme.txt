@@ -46,4 +46,18 @@
 	The library files are located inside /toolchain/arm/lib/*.
 	
 	--4.4
+	
+	--6.7
+	Volatile is a qualifier that is applied to a variable when it is 
+	declared. It tells the compiler the variable might change without
+	any action taken by the code the compiler finds nearby. So, the 
+	compiler is forced to disable some possible optimization and thus
+	intoducing a perfomance penalty on the compiled code.
+		This is the case here, volatime counting variable disable 
+	optimal code production and increasing the size of .text of the 
+	function from 168 bytes to 192 bytes. This creates perfomance
+	penalty and the "Hello world" and LED blinking is going slower.
+	To measure function size we used /toolchain/arm/bin/arm-elf-objdump
+
+-- EOF
 
