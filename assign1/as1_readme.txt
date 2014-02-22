@@ -46,6 +46,29 @@
 	The library files are located inside /toolchain/arm/lib/*.
 	
 	--4.4
+	- elfsize: Calculates the size of the final binary of firmware to 
+		be sent to the brick.
+	- download: It transfers the firmware(.bin) to the brick
+	- %.hex: Transform the ELF file to a .hex file, uses objcopy tool.
+	- %.bin: Transform the ELF file to a .bin file, uses objcopy tool.
+	- %.lss: Creates a lss file from the ELF file. The lss contains 
+		memory and binary information.
+	- %.sym: Creates a classic symbol table using the ELF file
+
+	--5.1
+	Our firmware is downloaded for the ARM processor. The AVR processor
+	runs the input and output circuits and the buttons on the brick.
+
+	--5.2
+	Yes, the functionality of the ON/OFF button remains the same.
+	From the NXT Technical overview I can see that buttons are connected
+	only with the AVR Co-Processor.
+
+	--6.4
+
+	--6.5
+
+	--6.6
 	
 	--6.7
 	Volatile is a qualifier that is applied to a variable when it is 
