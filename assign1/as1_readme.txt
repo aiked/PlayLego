@@ -53,7 +53,14 @@
 	- %.bin: Transform the ELF file to a .bin file, uses objcopy tool.
 	- %.lss: Creates a lss file from the ELF file. The lss contains 
 		memory and binary information.
-	- %.sym: Creates a classic symbol table using the ELF file
+	- %.sym: Creates a classic symbol table using the ELF file.
+	- %.elf: Cross-compiles the assembly and source C files using the 
+		flags defined with CFLAGS.
+	- $(COBJ): Compiles all the source C files into object files.
+	- $(AOBJ): Compiles all the assembly files into object files.
+	- clean: Classic behavior, cleans non-source files.
+	- all: Compiles all the .elf, .bin, .lss and .sym targets.
+  - depend: It has no real functionality.
 
 	--5.1
 	Our firmware is downloaded for the ARM processor. The AVR processor
