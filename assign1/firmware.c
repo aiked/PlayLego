@@ -1,13 +1,12 @@
 #include <stdlib.h>
 #include <assert.h>
-#include "display.h"
-// Lego Nxt include
-#define S_SEC 10000
+
+#include "helloworld.h"
 
 int main(void){
 	
-//	hello_world( 100 );
-	snail_hello_world( 100 );
+	hello_world( 5 );
+//	snail_hello_world( 5 );
 
 	return 0;
 }
