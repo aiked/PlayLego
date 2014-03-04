@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body>
+    <div style="text-align: justify;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">CS325 Assignment 2: Digital Clock</span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><font size="-1"><br style="font-family:
+          Helvetica,Arial,sans-serif;">
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span><span style="font-family: Helvetica,Arial,sans-serif;">The
+          goal
+          of this assignment is to help you understand timers,
+          interrupts, and
+          introduce you to using the display (LCD) and sound via the
+          corresponding communication protocols/peripherals. </span><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;"></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;">
+        </span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;">1. Get a lego kit from the lab</span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span><span style="font-style: italic;">Return the
+          components you have used for the previous assignment. </span>For
+this
+        assignment you will need the lego nxt controller, the charger
+        for
+        the controller battery, and a usb cable. Follow the same
+        procedure as
+        for the previous assignments. </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">Copy
+        the
+        files ~hy428/files/as2_dclock.tar.gz to your account. Create a
+        file <span style="font-style: italic;">as2_readme.txt </span>that
+        will contain the answers to questions below.<br>
+        <br>
+        <span style="font-weight: bold;">2. Display time as HH:MM:SS</span><br>
+        <br>
+        Modify display.[ch] from the previous assignment to provide a
+        call<br>
+        <br>
+      </font><font style="font-family: Courier New,Courier,monospace;"
+        size="-1">printtime(UBYTE hh, UBYTE mm, UBYTE ss);<br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><br>
+        that displays time in the format HH:MM:SS (you can always make
+        it more fancy if you want).<br>
+        <br>
+        2.1 Via which communication protocol/peripheral does data and
+        commands get writtent to the LCD? <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">2.2 Does updating the LCD require using interrupts at
+        all?</font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">2.3
+Does
+        updating the LCD occupy the CPU significantly? Does it require
+        waiting on certain events? If yes is this high overhead? If no,
+        how is
+        this achived?<br>
+        <br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-weight: bold;">3. Setup and use the
+          PIT<br>
+          <br>
+        </span>Read from the appropriate <a
+          href="../reading/AT91SAM7S_preliminary.pdf">manual</a><span
+          style="font-weight: bold;"></span>
+        how the PIT works. Note that the PIT runs at master clock (MSC)
+        / 16.
+        Find the appropriate definitions in AT91SAM7S256.h.&nbsp;
+        Implement the
+        following calls of the pit.h interface.<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-family: Courier
+          New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PITEnable(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PITDisable(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">ULONG&nbsp;&nbsp;&nbsp;&nbsp;
+          PITRead(void);</span><span style="font-family: monospace;"><br>
+        </span><br style="font-family: Helvetica,Arial,sans-serif;">
+        <span style="font-family: Helvetica,Arial,sans-serif;">These
+          calls require reading or writing a single memory mapped
+          location. Next, implement the following calls.</span><span
+          style="font-family: monospace;"><br>
+          <br style="font-family: monospace;">
+        </span><span style="font-family: monospace;"></span><span
+          style="font-family: Courier New,Courier,monospace;">UWORD&nbsp;&nbsp;
+          &nbsp; PITTicks2ms(ULONG ticks);</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">UWORD&nbsp;&nbsp;
+          &nbsp; PITTicks2s(ULONG ticks);</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;
+          &nbsp; spindelayms(ULONG ms);</span><span style="font-family:
+          monospace;"><br>
+          <br>
+        </span><span style="font-family: Helvetica,Arial,sans-serif;">These
+calls
+          simply perform support functions. The first two convert a
+          number
+          of PIT ticks to milliseconds or seconds. The last one simply
+          delays for
+          ms milliseconds by spining on the PIT value.</span><span
+          style="font-family: monospace;"><br>
+          <br>
+        </span></font><font size="-1"><span style="font-family:
+          Helvetica,Arial,sans-serif;">3.1 Implement a main function
+          that prints the time and udpates the display every second.<br>
+          3.2 What is the maximum value that can be read from the PIT?
+          How many milliseconds is this?<br>
+        </span><span style="font-family: monospace;">
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">4. Setup and use the AIC</span></font><font size="-1"><span
+          style="font-family: monospace;"><br>
+          <br>
+        </span><span style="font-family: Helvetica,Arial,sans-serif;"></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1">Read
+        from the appropriate <a
+          href="../reading/AT91SAM7S_preliminary.pdf">manual</a><span
+          style="font-weight: bold;"></span>
+        how the AIC works. </font><font size="-1"><span
+          style="font-family: Helvetica,Arial,sans-serif;">Implement
+          the interface aic.h to the advanced interrupt controller. This
+          interface allows you to enable or disable specific interrupts
+          in the
+          AIC. Initializing the AIC is merely disabling all interrupts.
+          Enabling
+          an interrupt in the AIC requires setting up the mode of the
+          interrupts
+          (e.g. edge or level triggered and priority),&nbsp; setting up
+          an
+          interrupt handler, and enabling the corresponding interrupt
+          ID.
+          Disabling the interrupt requires clearing the interrupt,
+          reseting the
+          interrupt handler, and disabling the interrupt. At this point
+          you can
+          make all interrupts in the AIC use the lowest priority.<br>
+          <br>
+          4.1 What is the difference between edge- vs. level-triggered
+          interrupts? Which ones will you choose to use and why?<br>
+          <br>
+          <span style="font-weight: bold;">5. Setup and use PIT
+            interrupts</span><br style="font-weight: bold;">
+          <br>
+          Next implement the rest of the pit.h cals:</span><span
+          style="font-family: monospace;"><br>
+          <br>
+        </span><span style="font-family: Courier New,Courier,monospace;">ULONG&nbsp;&nbsp;&nbsp;&nbsp;
+          PITReadReset(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PITInterruptEnable(ULONG period, void (*handler)(void));</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PITInterruptDisable(void);</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          PITAckInterrupt(void);</span><br>
+        <br>
+        <span style="font-family: Helvetica,Arial,sans-serif;">To enable
+          or
+          disable the PIT interrupt you need to enable the corresponding
+          interrupt in the AIC, setup the period in the PIT, and enable
+          the
+          interrupt itself in the PIT.&nbsp; Disabling the interrupt
+          involves the
+          "inverse" steps.</span><br>
+        <br>
+        <span style="font-family: Helvetica,Arial,sans-serif;">5.1
+          Implement main using the PIT interrupts to update the time
+          every second. </span><br style="font-family:
+          Helvetica,Arial,sans-serif;">
+        <span style="font-family: Helvetica,Arial,sans-serif;">5.2 What
+          is the minimum frequency of PIT interrupts (max period)?<br>
+          <br>
+          <span style="font-weight: bold;">6. Clock beeps every 10
+            seconds</span><br>
+        </span>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><br>
+        Now we need to make the clock sound a simple beep every 10
+        seconds. For this you need to implement the interface <span
+          style="font-style: italic;">sound.h.<br>
+          <br>
+          <span style="font-style: italic;"></span></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1">Read
+        from the appropriate <a
+          href="../reading/AT91SAM7S_preliminary.pdf">manual</a><span
+          style="font-weight: bold;"></span>
+        how the serial synchronous controller (SSC) works. Function <span
+          style="font-style: italic;">SoundSync() </span>is
+        already provided. This function makes a sound depending on the
+        parameters used. Calling it with a pattern[]={0xFF00FF00},
+        rate=100,
+        and duration=10 should make a simple beep sound. This funciton
+        is
+        synchronous in the sense that it waits until the sound is
+        complete and
+        then it returns to the caller. Your goal is to implement the
+        asynchronous version. For implementing SoundAsync you will need
+        to use
+        SSC interrupts (and an interrupt handler). SoundAsync will
+        merely
+        initiate the sound sequence and then, the handler will ensure
+        that it
+        outputs the sound pattern via the SSC. You will see that you
+        need to
+        also implement some help functions in sound.c that are not part
+        of the
+        sound.h interface.<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">6.1 Implement the rest of the sound.h interface.<br>
+        6.2 Experiment with longer patterns and different rate and
+        duration parameters using sync and async calls.<br>
+      </font></div>
+    <div style="text-align: justify;"><font size="-1"><span
+          style="font-family: Helvetica,Arial,sans-serif;">6.3 Modify
+          you main function to beep every 10 seconds.<br>
+          6.4 Try generating a beep every 1 minute and every 1 second as
+          well. Does everything still work fine?<br>
+        </span>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"><span style="font-weight: bold;"><span
+                style="font-weight: bold;"></span></span></span></span></font><font
+        size="-1"><br>
+        <span style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;">7.&nbsp; Extra Credit</span><br>
+        <br>
+        <span style="font-family: Helvetica,Arial,sans-serif;">7.1
+          Measure the accuracy of your digital clock over a longer
+          period. What is its accuracy? Why is it what it is (low or
+          high)?<br>
+          7.2 Is it possible that interrupts are lost while your program
+          is
+          running? How can this happen and what does it mean for each
+          peripheral
+          you use?<br>
+          7.3 Is it possible that you receive nested interrupts?
+          Explain?<br>
+          7.4 How does the sound gets generated after we send data via
+          the SSC?<br>
+          7.5 Can you control the volume of the sound? Modify the sound
+          interface to do so.<br>
+          7.6 Can you generate specific tones?<br>
+        </span><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;"><span
+              style="font-weight: bold;"><span style="font-weight:
+                bold;">
+              </span></span>8. Submit</span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>Submit all files required to run the assignment
+        as a
+        single as2_dclock.tar.gz file, including all your answers using
+        the
+        submit procedure described in the policies section. Return the
+        components you used for this assignment, following the procedure
+        outlined
+        in class. </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;"></span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font>
+    </div>
+    <hr style="width: 100%; height: 2px; margin-left: 0px; margin-right:
+      0px;">
+    <div style="text-align: justify;">
+    </div>
+    <div style="text-align: right;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">&copy; copyright
+        University of Crete, Greece. Last Modified: Feb 15, 2009</font><font
+        size="-1"><br>
+      </font>
+    </div>
+    <div style="text-align: justify;">
+      <font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font></div>
+  </body>
+</html>
