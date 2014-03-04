@@ -6,16 +6,24 @@
 #include "display.h"
 #include "sound.h"
 
+/*
 #if using PIT interrupts
 void pit_handler(void){
 	// do your thing here
 	// update time on display every second
 }
 #endif
+*/
 
-int main(void)
-{
-  ULONG pattern[] = {0xFF00FF00};
+int main(void){
+
+	DisplayInit();
+	DisplayOn(1);
+	
+	DisplayPrintTime(5,14,7);
+	
+	/*
+	ULONG pattern[] = {0xFF00FF00};
   //
   // init here 
   //
@@ -31,6 +39,7 @@ int main(void)
   //
   // cleanup here
   //
-
-  return 0;
+	*/
+  
+	return 0;
 }

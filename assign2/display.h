@@ -19,16 +19,6 @@ void      DisplayErase(void);
 void      DisplayChar(UBYTE On,UBYTE X,UBYTE Y,UBYTE Char);
 void      DisplayNum(UBYTE On,UBYTE X,UBYTE Y,UWORD Num);
 void      DisplayString(UBYTE X,UBYTE Y,UBYTE *pString);
-
-
-// add a call to print time as HH:MM:SS
-printtime(UBYTE hh, UBYTE mm, UBYTE ss);
-
-// add anything else you need for debugging
-
-/ add a call to print time as HH:MM:SS
-printtime(UBYTE hh, UBYTE mm, UBYTE ss);
-
-// add anything else you need for debugging
+void			DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss);
 
 #endif

@@ -375,3 +375,27 @@ void      DisplayString(UBYTE X,UBYTE Y,UBYTE *pString)
     pString++;
   }
 }
+
+/*
+ * Assignment 2 
+ */
+
+#define START_HEIGHT 27
+void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
+	
+	DisplayNum(1, 20, START_HEIGHT, hh/10);
+	DisplayNum(1, 25, START_HEIGHT, hh%10);
+
+	DisplayChar(1, 35, START_HEIGHT, ':');
+
+	DisplayNum(1, 45, START_HEIGHT, mm/10);
+	DisplayNum(1, 50, START_HEIGHT, mm%10);
+
+	DisplayChar(1, 60, START_HEIGHT, ':');
+
+	DisplayNum(1, 70, START_HEIGHT, ss/10);
+	DisplayNum(1, 75, START_HEIGHT, ss%10);
+
+	DisplayUpdateSync();
+}
+
