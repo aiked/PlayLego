@@ -63,7 +63,7 @@
 	- $(AOBJ): Compiles all the assembly files into object files.
 	- clean: Classic behavior, cleans non-source files.
 	- all: Compiles all the .elf, .bin, .lss and .sym targets.
-  - depend: It has no real functionality.
+  	- depend: It has no real functionality.
 
 	--5.1
 	Our firmware is downloaded for the ARM processor. The AVR processor
