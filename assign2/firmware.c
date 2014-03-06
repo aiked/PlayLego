@@ -20,7 +20,8 @@ int main(void){
 	DisplayInit();
 	DisplayOn(1);
 	
-	DisplayPrintTime(5,14,7);
+//	DisplayPrintTime(5,14,7);
+	DisplayPrintTimeBusy();
 	
 	/*
 	ULONG pattern[] = {0xFF00FF00};
