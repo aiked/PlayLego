@@ -1,4 +1,5 @@
 #include  "display.h"
+#include "pit.h"
 #include "AT91SAM7S256.h"
 
 // Display 128 x 64
@@ -382,7 +383,7 @@ void      DisplayString(UBYTE X,UBYTE Y,UBYTE *pString)
 
 #define START_HEIGHT 27
 void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
-	
+/*	
 	DisplayNum(1, 20, START_HEIGHT, hh/10);
 	DisplayNum(1, 25, START_HEIGHT, hh%10);
 
@@ -397,5 +398,16 @@ void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
 	DisplayNum(1, 75, START_HEIGHT, ss%10);
 
 	DisplayUpdateSync();
+*/
+	int temp = 0;
+	while(1)
+		{
+		spindelayms(1);
+		temp++;
+		DisplayNum(1,10,10,temp);
+		DisplayUpdateSync();	
+	}
+
 }
+
 
