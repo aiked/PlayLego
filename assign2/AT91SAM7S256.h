@@ -52,7 +52,7 @@ typedef volatile unsigned int AT91_REG;// Hardware register definition
 // *****************************************************************************
 typedef struct _AT91S_SYS {
 	AT91_REG	 AIC_SMR[32]; 	// Source Mode Register
-	AT91_REG	 AIC_SVR[32]; 	// Source Vector Register
+	AT91_REG	 AIC_SVR[32]; 	// Source Vctor Register
 	AT91_REG	 AIC_IVR; 	// IRQ Vector Register
 	AT91_REG	 AIC_FVR; 	// FIQ Vector Register
 	AT91_REG	 AIC_ISR; 	// Interrupt Status Register
@@ -218,6 +218,7 @@ typedef struct _AT91S_AIC {
 #define AT91C_AIC_DCR_PROT    ((unsigned int) 0x1 <<  0) // (AIC) Protection Mode
 #define AT91C_AIC_DCR_GMSK    ((unsigned int) 0x1 <<  1) // (AIC) General Mask
 
+#define AT91C_AIC_REG_ENABLE(n)  ((unsinged int) 0x1 <<  n) // (AIC) Enable Interrupt @ n position [API]
 // *****************************************************************************
 //              SOFTWARE API DEFINITION  FOR Peripheral DMA Controller
 // *****************************************************************************

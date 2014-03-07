@@ -1,0 +1,30 @@
+   1              		.file	"firmware.c"
+   2              		.section	.text.main,"ax",%progbits
+   3              		.align	2
+   4              		.global	main
+   6              	main:
+   7              		@ args = 0, pretend = 0, frame = 0
+   8              		@ frame_needed = 0, uses_anonymous_args = 0
+   9 0000 04E02DE5 		str	lr, [sp, #-4]!
+  10 0004 FEFFFFEB 		bl	AICInit
+  11 0008 FEFFFFEB 		bl	DisplayInit
+  12 000c 0100A0E3 		mov	r0, #1
+  13 0010 FEFFFFEB 		bl	DisplayOn
+  14 0014 FEFFFFEB 		bl	DisplayPrintTimeBusy
+  15 0018 0010A0E1 		mov	r1, r0
+  16 001c 0000A0E3 		mov	r0, #0
+  17 0020 FEFFFFEB 		bl	PITInterruptEnable
+  18 0024 0000A0E3 		mov	r0, #0
+  19 0028 04F09DE4 		ldr	pc, [sp], #4
+  21              		.ident	"GCC: (GNU) 4.0.2"
+DEFINED SYMBOLS
+                            *ABS*:00000000 firmware.c
+     /tmp/ccqMtVte.s:6      .text.main:00000000 main
+     /tmp/ccqMtVte.s:9      .text.main:00000000 $a
+
+UNDEFINED SYMBOLS
+AICInit
+DisplayInit
+DisplayOn
+DisplayPrintTimeBusy
+PITInterruptEnable

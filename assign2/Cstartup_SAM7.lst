@@ -1,0 +1,87 @@
+   1              		.file	"Cstartup_SAM7.c"
+   2              		.section	.text.AT91F_LowLevelInit,"ax",%progbits
+   3              		.align	2
+   4              		.global	AT91F_LowLevelInit
+   6              	AT91F_LowLevelInit:
+   7              		@ args = 0, pretend = 0, frame = 0
+   8              		@ frame_needed = 0, uses_anonymous_args = 0
+   9              		@ link register save eliminated.
+  10 0000 C0209FE5 		ldr	r2, .L26
+  11 0004 FF30E0E3 		mvn	r3, #255
+  12 0008 602083E5 		str	r2, [r3, #96]
+  13 000c 0229A0E3 		mov	r2, #32768
+  14 0010 073D43E2 		sub	r3, r3, #448
+  15 0014 042083E5 		str	r2, [r3, #4]
+  16 0018 AC209FE5 		ldr	r2, .L26+4
+  17 001c 053D43E2 		sub	r3, r3, #320
+  18 0020 202083E5 		str	r2, [r3, #32]
+  19              		@ lr needed for prologue
+  20              	.L2:
+  21 0024 A4209FE5 		ldr	r2, .L26+8
+  22 0028 683092E5 		ldr	r3, [r2, #104]
+  23 002c 010013E3 		tst	r3, #1
+  24 0030 0700000A 		beq	.L2
+  25 0034 98309FE5 		ldr	r3, .L26+12
+  26 0038 2C3082E5 		str	r3, [r2, #44]
+  27              	.L4:
+  28 003c 8C309FE5 		ldr	r3, .L26+8
+  29 0040 683093E5 		ldr	r3, [r3, #104]
+  30 0044 040013E3 		tst	r3, #4
+  31 0048 0D00000A 		beq	.L4
+  32              	.L14:
+  33 004c 7C209FE5 		ldr	r2, .L26+8
+  34 0050 683092E5 		ldr	r3, [r2, #104]
+  35 0054 080013E3 		tst	r3, #8
+  36 0058 1100000A 		beq	.L14
+  37 005c 0430A0E3 		mov	r3, #4
+  38 0060 303082E5 		str	r3, [r2, #48]
+  39              	.L7:
+  40 0064 64209FE5 		ldr	r2, .L26+8
+  41 0068 683092E5 		ldr	r3, [r2, #104]
+  42 006c 080013E3 		tst	r3, #8
+  43 0070 1700000A 		beq	.L7
+  44 0074 303092E5 		ldr	r3, [r2, #48]
+  45 0078 033083E3 		orr	r3, r3, #3
+  46 007c 303082E5 		str	r3, [r2, #48]
+  47              	.L9:
+  48 0080 48309FE5 		ldr	r3, .L26+8
+  49 0084 683093E5 		ldr	r3, [r3, #104]
+  50 0088 080013E3 		tst	r3, #8
+  51 008c 1E00000A 		beq	.L9
+  52 0090 40209FE5 		ldr	r2, .L26+16
+  53 0094 40309FE5 		ldr	r3, .L26+20
+  54 0098 802083E5 		str	r2, [r3, #128]
+  55 009c 0110A0E3 		mov	r1, #1
+  56              	.L11:
+  57 00a0 0121A0E1 		mov	r2, r1, asl #2
+  58 00a4 34309FE5 		ldr	r3, .L26+24
+  59 00a8 011081E2 		add	r1, r1, #1
+  60 00ac 1F0051E3 		cmp	r1, #31
+  61 00b0 803F02E5 		str	r3, [r2, #-3968]
+  62 00b4 2600001A 		bne	.L11
+  63 00b8 24209FE5 		ldr	r2, .L26+28
+  64 00bc 18309FE5 		ldr	r3, .L26+20
+  65 00c0 342183E5 		str	r2, [r3, #308]
+  66 00c4 1EFF2FE1 		bx	lr
+  67              	.L27:
+  68              		.align	2
+  69              	.L26:
+  70 00c8 00014800 		.word	4718848
+  71 00cc 01060000 		.word	1537
+  72 00d0 00FCFFFF 		.word	-1024
+  73 00d4 0E1C4800 		.word	4725774
+  74 00d8 00000000 		.word	AT91F_Default_FIQ_handler
+  75 00dc 00F0FFFF 		.word	-4096
+  76 00e0 00000000 		.word	AT91F_Default_IRQ_handler
+  77 00e4 00000000 		.word	AT91F_Spurious_handler
+  79              		.ident	"GCC: (GNU) 4.0.2"
+DEFINED SYMBOLS
+                            *ABS*:00000000 Cstartup_SAM7.c
+     /tmp/ccsisNEc.s:6      .text.AT91F_LowLevelInit:00000000 AT91F_LowLevelInit
+     /tmp/ccsisNEc.s:10     .text.AT91F_LowLevelInit:00000000 $a
+     /tmp/ccsisNEc.s:70     .text.AT91F_LowLevelInit:000000c8 $d
+
+UNDEFINED SYMBOLS
+AT91F_Default_FIQ_handler
+AT91F_Default_IRQ_handler
+AT91F_Spurious_handler

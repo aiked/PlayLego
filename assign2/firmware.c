@@ -17,12 +17,14 @@ void pit_handler(void){
 
 int main(void){
 
+	AICInit();
+	
 	DisplayInit();
 	DisplayOn(1);
 	
-//	DisplayPrintTime(5,14,7);
-	DisplayPrintTimeBusy();
-	
+	//DisplayPrintTimeBusy();
+	PITInterruptEnable( 0x0, DisplayPrintTimeBusy() );
+
 	/*
 	ULONG pattern[] = {0xFF00FF00};
   //

@@ -1,0 +1,198 @@
+   1              		.file	"pit.c"
+   2              		.section	.text.PITEnable,"ax",%progbits
+   3              		.align	2
+   4              		.global	PITEnable
+   6              	PITEnable:
+   7              		@ args = 0, pretend = 0, frame = 0
+   8              		@ frame_needed = 0, uses_anonymous_args = 0
+   9              		@ link register save eliminated.
+  10 0000 08209FE5 		ldr	r2, .L3
+  11 0004 08309FE5 		ldr	r3, .L3+4
+  12              		@ lr needed for prologue
+  13 0008 002083E5 		str	r2, [r3, #0]
+  14 000c 1EFF2FE1 		bx	lr
+  15              	.L4:
+  16              		.align	2
+  17              	.L3:
+  18 0010 C0C62D03 		.word	53331648
+  19 0014 30FDFFFF 		.word	-720
+  21              		.section	.text.PITDisable,"ax",%progbits
+  22              		.align	2
+  23              		.global	PITDisable
+  25              	PITDisable:
+  26              		@ args = 0, pretend = 0, frame = 4
+  27              		@ frame_needed = 0, uses_anonymous_args = 0
+  28              		@ link register save eliminated.
+  29 0000 1C309FE5 		ldr	r3, .L7
+  30 0004 002093E5 		ldr	r2, [r3, #0]
+  31 0008 0224C2E3 		bic	r2, r2, #33554432
+  32 000c 002083E5 		str	r2, [r3, #0]
+  33 0010 083093E5 		ldr	r3, [r3, #8]
+  34 0014 04D04DE2 		sub	sp, sp, #4
+  35              		@ lr needed for prologue
+  36 0018 00308DE5 		str	r3, [sp, #0]
+  37 001c 04D08DE2 		add	sp, sp, #4
+  38 0020 1EFF2FE1 		bx	lr
+  39              	.L8:
+  40              		.align	2
+  41              	.L7:
+  42 0024 30FDFFFF 		.word	-720
+  44              		.section	.text.PITRead,"ax",%progbits
+  45              		.align	2
+  46              		.global	PITRead
+  48              	PITRead:
+  49              		@ args = 0, pretend = 0, frame = 0
+  50              		@ frame_needed = 0, uses_anonymous_args = 0
+  51              		@ link register save eliminated.
+  52 0000 04309FE5 		ldr	r3, .L11
+  53 0004 0C0093E5 		ldr	r0, [r3, #12]
+  54              		@ lr needed for prologue
+  55 0008 1EFF2FE1 		bx	lr
+  56              	.L12:
+  57              		.align	2
+  58              	.L11:
+  59 000c 30FDFFFF 		.word	-720
+  61              		.section	.text.PITReadReset,"ax",%progbits
+  62              		.align	2
+  63              		.global	PITReadReset
+  65              	PITReadReset:
+  66              		@ args = 0, pretend = 0, frame = 4
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69 0000 14309FE5 		ldr	r3, .L15
+  70 0004 083093E5 		ldr	r3, [r3, #8]
+  71 0008 04D04DE2 		sub	sp, sp, #4
+  72 000c 00308DE5 		str	r3, [sp, #0]
+  73 0010 00009DE5 		ldr	r0, [sp, #0]
+  74              		@ lr needed for prologue
+  75 0014 04D08DE2 		add	sp, sp, #4
+  76 0018 1EFF2FE1 		bx	lr
+  77              	.L16:
+  78              		.align	2
+  79              	.L15:
+  80 001c 30FDFFFF 		.word	-720
+  82              		.section	.text.PITInterruptDisable,"ax",%progbits
+  83              		.align	2
+  84              		.global	PITInterruptDisable
+  86              	PITInterruptDisable:
+  87              		@ args = 0, pretend = 0, frame = 0
+  88              		@ frame_needed = 0, uses_anonymous_args = 0
+  89              		@ link register save eliminated.
+  90              		@ lr needed for prologue
+  91 0000 1EFF2FE1 		bx	lr
+  93              		.global	__udivsi3
+  94              		.section	.text.PITTicks2ms,"ax",%progbits
+  95              		.align	2
+  96              		.global	PITTicks2ms
+  98              	PITTicks2ms:
+  99              		@ args = 0, pretend = 0, frame = 0
+ 100              		@ frame_needed = 0, uses_anonymous_args = 0
+ 101 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 102 0004 0C109FE5 		ldr	r1, .L21
+ 103 0008 FEFFFFEB 		bl	__udivsi3
+ 104 000c 0008A0E1 		mov	r0, r0, asl #16
+ 105 0010 2008A0E1 		mov	r0, r0, lsr #16
+ 106 0014 04F09DE4 		ldr	pc, [sp], #4
+ 107              	.L22:
+ 108              		.align	2
+ 109              	.L21:
+ 110 0018 B80B0000 		.word	3000
+ 112              		.section	.text.PITTicks2s,"ax",%progbits
+ 113              		.align	2
+ 114              		.global	PITTicks2s
+ 116              	PITTicks2s:
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 120 0004 0C109FE5 		ldr	r1, .L25
+ 121 0008 FEFFFFEB 		bl	__udivsi3
+ 122 000c 0008A0E1 		mov	r0, r0, asl #16
+ 123 0010 2008A0E1 		mov	r0, r0, lsr #16
+ 124 0014 04F09DE4 		ldr	pc, [sp], #4
+ 125              	.L26:
+ 126              		.align	2
+ 127              	.L25:
+ 128 0018 C0C62D00 		.word	3000000
+ 130              		.section	.text.PITInterruptEnable,"ax",%progbits
+ 131              		.align	2
+ 132              		.global	PITInterruptEnable
+ 134              	PITInterruptEnable:
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 138 0004 0100A0E3 		mov	r0, #1
+ 139 0008 FEFFFFEB 		bl	AICInterruptEnable
+ 140 000c 08209FE5 		ldr	r2, .L29
+ 141 0010 08309FE5 		ldr	r3, .L29+4
+ 142 0014 002083E5 		str	r2, [r3, #0]
+ 143 0018 04F09DE4 		ldr	pc, [sp], #4
+ 144              	.L30:
+ 145              		.align	2
+ 146              	.L29:
+ 147 001c C0C62D03 		.word	53331648
+ 148 0020 30FDFFFF 		.word	-720
+ 150              		.section	.text.spindelayms,"ax",%progbits
+ 151              		.align	2
+ 152              		.global	spindelayms
+ 154              	spindelayms:
+ 155              		@ args = 0, pretend = 0, frame = 4
+ 156              		@ frame_needed = 0, uses_anonymous_args = 0
+ 157 0000 30402DE9 		stmfd	sp!, {r4, r5, lr}
+ 158 0004 40209FE5 		ldr	r2, .L37
+ 159 0008 40309FE5 		ldr	r3, .L37+4
+ 160 000c 002083E5 		str	r2, [r3, #0]
+ 161 0010 04D04DE2 		sub	sp, sp, #4
+ 162 0014 0050A0E1 		mov	r5, r0
+ 163              	.L32:
+ 164 0018 30409FE5 		ldr	r4, .L37+4
+ 165 001c 30109FE5 		ldr	r1, .L37+8
+ 166 0020 0C0094E5 		ldr	r0, [r4, #12]
+ 167 0024 FEFFFFEB 		bl	__udivsi3
+ 168 0028 050050E1 		cmp	r0, r5
+ 169 002c 0400009A 		bls	.L32
+ 170 0030 003094E5 		ldr	r3, [r4, #0]
+ 171 0034 0234C3E3 		bic	r3, r3, #33554432
+ 172 0038 003084E5 		str	r3, [r4, #0]
+ 173 003c 083094E5 		ldr	r3, [r4, #8]
+ 174 0040 00308DE5 		str	r3, [sp, #0]
+ 175 0044 04D08DE2 		add	sp, sp, #4
+ 176 0048 3080BDE8 		ldmfd	sp!, {r4, r5, pc}
+ 177              	.L38:
+ 178              		.align	2
+ 179              	.L37:
+ 180 004c C0C62D03 		.word	53331648
+ 181 0050 30FDFFFF 		.word	-720
+ 182 0054 B80B0000 		.word	3000
+ 184              		.ident	"GCC: (GNU) 4.0.2"
+DEFINED SYMBOLS
+                            *ABS*:00000000 pit.c
+     /tmp/ccyr8i9A.s:6      .text.PITEnable:00000000 PITEnable
+     /tmp/ccyr8i9A.s:10     .text.PITEnable:00000000 $a
+     /tmp/ccyr8i9A.s:18     .text.PITEnable:00000010 $d
+     /tmp/ccyr8i9A.s:25     .text.PITDisable:00000000 PITDisable
+     /tmp/ccyr8i9A.s:29     .text.PITDisable:00000000 $a
+     /tmp/ccyr8i9A.s:42     .text.PITDisable:00000024 $d
+     /tmp/ccyr8i9A.s:48     .text.PITRead:00000000 PITRead
+     /tmp/ccyr8i9A.s:52     .text.PITRead:00000000 $a
+     /tmp/ccyr8i9A.s:59     .text.PITRead:0000000c $d
+     /tmp/ccyr8i9A.s:65     .text.PITReadReset:00000000 PITReadReset
+     /tmp/ccyr8i9A.s:69     .text.PITReadReset:00000000 $a
+     /tmp/ccyr8i9A.s:80     .text.PITReadReset:0000001c $d
+     /tmp/ccyr8i9A.s:86     .text.PITInterruptDisable:00000000 PITInterruptDisable
+     /tmp/ccyr8i9A.s:91     .text.PITInterruptDisable:00000000 $a
+     /tmp/ccyr8i9A.s:98     .text.PITTicks2ms:00000000 PITTicks2ms
+     /tmp/ccyr8i9A.s:101    .text.PITTicks2ms:00000000 $a
+     /tmp/ccyr8i9A.s:110    .text.PITTicks2ms:00000018 $d
+     /tmp/ccyr8i9A.s:116    .text.PITTicks2s:00000000 PITTicks2s
+     /tmp/ccyr8i9A.s:119    .text.PITTicks2s:00000000 $a
+     /tmp/ccyr8i9A.s:128    .text.PITTicks2s:00000018 $d
+     /tmp/ccyr8i9A.s:134    .text.PITInterruptEnable:00000000 PITInterruptEnable
+     /tmp/ccyr8i9A.s:137    .text.PITInterruptEnable:00000000 $a
+     /tmp/ccyr8i9A.s:147    .text.PITInterruptEnable:0000001c $d
+     /tmp/ccyr8i9A.s:154    .text.spindelayms:00000000 spindelayms
+     /tmp/ccyr8i9A.s:157    .text.spindelayms:00000000 $a
+     /tmp/ccyr8i9A.s:180    .text.spindelayms:0000004c $d
+
+UNDEFINED SYMBOLS
+__udivsi3
+AICInterruptEnable

@@ -1,0 +1,466 @@
+   1              	# 1 "Cstartup.S"
+   2              	# 1 "<built-in>"
+   1              	/*------------------------------------------------------------------------------
+   0              	
+   0              	
+   2              	//*- File source          : Cstartup.s
+   3              	//*- Object               : Generic CStartup for KEIL and GCC
+   4              	//*- Compilation flag     : None
+   5              	//*-----------------------------------------------------------------------------*/
+   6              	
+   7              	/* check configuration-options and map to "assembler symbols": */
+   8              	#ifdef ROM
+   9              	.set RAM_MODE, 0
+  10              	#ifdef VECTORS_IN_RAM
+  11              	.set REMAP, 1
+  12              	.set VECTREMAPPED, 1
+  13              	#else
+  14              	.set REMAP, 0
+  15              	.set VECTREMAPPED, 0
+  16              	#endif
+  17              	#endif
+  18              	
+  19              	#ifdef RAM
+  20              	.set RAM_MODE, 1
+  21              	.set REMAP, 1
+  22              	.set VECTREMAPPED, 0
+  23              	#endif
+  24              	
+  25              	.if (RAM_MODE)
+  26              	.print "RAM_MODE enabled"
+  27              	.else
+  28              	.print "ROM_MODE enabled"
+  29              	.endif
+  30              	
+  31              	.if (REMAP)
+  32              	.print "remapping enabled"
+  33              	.endif
+  34              	
+  35              	.if (VECTREMAPPED)
+  36              	.print "Vectors at start of RAM"
+  37              	.else
+  38              	.print "Vectors at start of Code"
+  39              	.endif
+  40              	
+  41              	.equ AIC_IVR,         (256) 
+  42              	.equ AIC_FVR,         (260) 
+  43              	.equ AIC_EOICR,       (304)
+  44              	.equ AT91C_BASE_AIC,  (0xFFFFF000)
+  45              	
+  46              	/*------------------------------------------------------------------------------
+  47              	//*- Exception vectors 
+  48              	//*--------------------
+  49              	//*- These vectors can be read at address 0 or at RAM address
+  50              	//*- They ABSOLUTELY requires to be in relative addresssing mode in order to
+  51              	//*- guarantee a valid jump. For the moment, all are just looping.
+  52              	//*- If an exception occurs before remap, this would result in an infinite loop.
+  53              	//*- To ensure if a exeption occurs before start application to infinite loop.
+  54              	//*------------------------------------------------------------------------------*/
+  55              	
+  56              	.if (VECTREMAPPED)
+  57              	.print "Vectors in section .vectmapped -> .data"
+  58              	.section .vectmapped, "ax"
+  59              	.else
+  60              	.print "Vectors in section .vectorg -> .text"
+  61              	.section .vectorg, "ax"
+  62              	.endif
+  63              	
+  64 0000 3CF09FE5 	LDR     PC,Reset_Addr		/* 0x00 Reset handler */    
+  65 0004 3CF09FE5 	LDR     PC,Undef_Addr		/* 0x04 Undefined Instruction */
+  66 0008 3CF09FE5 	LDR     PC,SWI_Addr		/* 0x08 Software Interrupt */
+  67 000c 3CF09FE5 	LDR     PC,PAbt_Addr		/* 0x0C Prefetch Abort */
+  68 0010 3CF09FE5 	LDR     PC,DAbt_Addr		/* 0x10 Data Abort */
+  69 0014 0000A0E1 	NOP                 		/* 0x14 reserved  */
+  70 0018 38F09FE5 	LDR     PC,IRQ_Addr		/* 0x18 IRQ */
+  71              	fiqvec:                                 /* 0x1c FIQ */
+  72              	/*------------------------------------------------------------------------------
+  73              	//*- Function             : FIQ_Handler_Entry
+  74              	//*- Treatments           : FIQ Controller Interrupt Handler.
+  75              	//*- Called Functions     : AIC_FVR[interrupt] 
+  76              	//*------------------------------------------------------------------------------*/
+  77              	
+  78              	FIQ_Handler_Entry:
+  79              	
+  80              	/*- Switch in SVC/User Mode to allow User Stack access for C code 	*/
+  81              	/* because the FIQ is not yet acknowledged*/
+  82              	
+  83              	/*- Save and r0 in FIQ_Register */
+  84 001c 0090A0E1 	mov         r9,r0
+  85 0020 040198E5 	ldr         r0 , [r8, #AIC_FVR]
+  86 0024 D3F021E3 	msr         CPSR_c,#I_BIT | F_BIT | ARM_MODE_SVC
+  87              	
+  88              	/*- Save scratch/used registers and LR in User Stack */
+  89 0028 0E502DE9 	stmfd       sp!, { r1-r3, r12, lr}
+  90              	
+  91              	/*- Branch to the routine pointed by the AIC_FVR */
+  92 002c 0FE0A0E1 	mov         r14, pc
+  93 0030 10FF2FE1 	bx          r0
+  94              	
+  95              	/*- Restore scratch/used registers and LR from User Stack */
+  96 0034 0E50BDE8 	ldmia       sp!, { r1-r3, r12, lr}
+  97              	
+  98              	/*- Leave Interrupts disabled and switch back in FIQ mode */
+  99 0038 D1F021E3 	msr         CPSR_c, #I_BIT | F_BIT | ARM_MODE_FIQ
+ 100              	
+ 101              	/*- Restore the R0 ARM_MODE_SVC register */
+ 102 003c 0900A0E1 	mov         r0,r9
+ 103              	
+ 104              	/*- Restore the Program Counter using the LR_fiq directly in the PC */
+ 105 0040 04F05EE2 	subs        pc,lr,#4
+ 106              	
+ 107              	/* end of fiqhandler */
+ 108              	
+ 109 0044 28000000 	Reset_Addr:       .word     InitReset
+ 110 0048 5C000000 	Undef_Addr:       .word     Undef_Handler
+ 111 004c 60000000 	SWI_Addr:         .word     SWI_Handler
+ 112              	/*SWI_Addr:         .word     SoftwareInterruptASM*/ /*in swi_handler.S */
+ 113 0050 64000000 	PAbt_Addr:        .word     PAbt_Handler
+ 114 0054 68000000 	DAbt_Addr:        .word     DAbt_Handler
+ 115 0058 00000000 	IRQ_Addr:         .word     IRQ_Handler_Entry
+ 116 005c 150000EA 	Undef_Handler:  B       Undef_Handler
+ 117 0060 160000EA 	SWI_Handler:    B       SWI_Handler
+ 118 0064 170000EA 	PAbt_Handler:   B       PAbt_Handler
+ 119 0068 180000EA 	DAbt_Handler:   B       DAbt_Handler
+ 120              	
+ 121              	.arm
+ 122              	.section .init, "ax"
+ 123              	.global _startup
+ 124              	.func   _startup
+ 125              	_startup:
+ 126              	reset: 
+ 127              	
+ 128              	.if (VECTREMAPPED)
+ 129              	/* mthomas: Dummy used during startup */
+ 130 0000 FCF09FE5 	LDR PC,=Reset_Addr_F
+ 131 0004 0000A0E1 	NOP
+ 132 0008 0000A0E1 	NOP
+ 133 000c 0000A0E1 	NOP
+ 134 0010 0000A0E1 	NOP
+ 135 0014 0000A0E1 	NOP /*.word 0xdeadbeef*/ /* Reserved Address */
+ 136 0018 0000A0E1 	NOP
+ 137 001c 0000A0E1 	NOP
+ 138 0020 28000000 	Reset_Addr_F:       .word     InitReset
+ 139              	.endif
+ 140              	
+ 141              	.RAM_TOP:
+ 142 0024 00000000 	.word	__TOP_STACK 
+ 143              	
+ 144              	InitReset:
+ 145              	
+ 146              	/*------------------------------------------------------------------------------
+ 147              	/*- Remapping
+ 148              	/*------------------------------------------------------------------------------*/
+ 149              	.if (VECTREMAPPED)
+ 150              	.print "RCR setting for remapping enabled"
+ 151              	.equ    MC_BASE,0xFFFFFF00  /* MC Base Address */
+ 152              	.equ    MC_RCR, 0x00        /* MC_RCR Offset */
+ 153              	
+ 154              	/* store first word in RAM into r4 */
+ 155 0028 D8009FE5 	ldr r0,=__FIRST_IN_RAM
+ 156 002c 004090E5 	ldr r4,[r0]
+ 157              	/* load value at address 0 into R2 */
+ 158 0030 0010A0E3 	ldr r1,=0x00000000
+ 159 0034 002091E5 	ldr r2,[r1]	
+ 160              	/* xor value from address 0 (flip all bits), store in R3 */
+ 161 0038 0030E0E3 	ldr r3,=0xffffffff
+ 162 003c 033022E0 	eor r3, r2, r3
+ 163              	/* write xored value to first word in RAM 
+ 164              	if already remapped this will also change
+ 165              	the value at 0 */
+ 166 0040 003080E5 	str r3,[r0]
+ 167              	/* load from address 0 again into R3 */
+ 168 0044 003091E5 	ldr r3,[r1]
+ 169              	/* restore first value in RAM */
+ 170 0048 004080E5 	str r4,[r0]
+ 171              			
+ 172              	/* compare */
+ 173 004c 020053E1 	cmp r3, r2
+ 174 0050 1600001A 	bne already_remapped
+ 175              	
+ 176              	/* if both values have been equal the change of the
+ 177              	   RAM-value had no effect on the value at 0x00000000 
+ 178              	   so we are not remapping yet -> remap now: */
+ 179 0054 FF00E0E3 	LDR     R0, =MC_BASE
+ 180 0058 0110A0E3 	MOV     R1, #1
+ 181 005c 001080E5 	STR     R1, [R0, #MC_RCR]
+ 182              			
+ 183              	already_remapped:
+ 184              	.endif
+ 185              	
+ 186              	/*------------------------------------------------------------------------------
+ 187              	/*- Low level Init (PMC, AIC, ? ....) by C function AT91F_LowLevelInit
+ 188              	/*------------------------------------------------------------------------------*/
+ 189              	            .extern   AT91F_LowLevelInit
+ 190              	/*- minumum C initialization */
+ 191              	/*- call  AT91F_LowLevelInit( void) */
+ 192              	
+ 193 0060 44D01FE5 	ldr     sp, .RAM_TOP            /* temporary stack in internal RAM (**) */
+ 194              	/*--Call Low level init function in ABSOLUTE through the Interworking	*/
+ 195 0064 A0009FE5 	ldr     r0,=AT91F_LowLevelInit
+ 196 0068 0FE0A0E1 	mov     lr, pc
+ 197 006c 10FF2FE1 	bx      r0
+ 198              	/*------------------------------------------------------------------------------
+ 199              	//*- Stack Sizes Definition
+ 200              	//*------------------------
+ 201              	//*- Interrupt Stack requires 2 words x 8 priority level x 4 bytes when using
+ 202              	//*- the vectoring. This assume that the IRQ management.
+ 203              	//*- The Interrupt Stack must be adjusted depending on the interrupt handlers.
+ 204              	//*- Fast Interrupt not requires stack If in your application it required you must
+ 205              	//*- be definehere.
+ 206              	//*- The System stack size is not defined and is limited by the free internal
+ 207              	//*- SRAM.
+ 208              	//*------------------------------------------------------------------------------*/
+ 209              	
+ 210              	/*------------------------------------------------------------------------------
+ 211              	//*- Top of Stack Definition
+ 212              	//*-------------------------
+ 213              	//*- Interrupt and Supervisor Stack are located at the top of internal memory in 
+ 214              	//*- order to speed the exception handling context saving and restoring.
+ 215              	//*- ARM_MODE_SVC (Application, C) Stack is located at the top of the external memory.
+ 216              	//*------------------------------------------------------------------------------*/
+ 217              	
+ 218              	.EQU		IRQ_STACK_SIZE,    (3*8*4)
+ 219              	.EQU		FIQ_STACK_SIZE,    (3*8*4)
+ 220              	.EQU		ARM_MODE_FIQ,       0x11
+ 221              	.EQU		ARM_MODE_IRQ,       0x12
+ 222              	.EQU		ARM_MODE_SVC,       0x13
+ 223              	.EQU		ARM_MODE_SYS,       0x1F
+ 224              	.EQU		I_BIT,              0x80
+ 225              	.EQU		F_BIT,              0x40
+ 226              	
+ 227              	.global I_BIT
+ 228              	
+ 229              	/*------------------------------------------------------------------------------
+ 230              	//*- Setup the stack for each mode
+ 231              	//*-------------------------------*/
+ 232 0070 0D00A0E1 	mov     r0, sp /* see (**) */
+ 233              	
+ 234              	/*- Set up Fast Interrupt Mode and set FIQ Mode Stack*/
+ 235 0074 D1F021E3 	msr     CPSR_c, #ARM_MODE_FIQ | I_BIT | F_BIT
+ 236 0078 00D0A0E1 	mov    sp, r0
+ 237 007c 600040E2 	sub    r0, r0, #FIQ_STACK_SIZE
+ 238              	/*- Init the FIQ register*/
+ 239 0080 88809FE5 	ldr     r8, =AT91C_BASE_AIC
+ 240              	
+ 241              	/*- Set up Interrupt Mode and set IRQ Mode Stack*/
+ 242 0084 D2F021E3 	msr     CPSR_c, #ARM_MODE_IRQ | I_BIT | F_BIT
+ 243 0088 00D0A0E1 	mov     sp, r0                     /* Init stack IRQ */
+ 244 008c 600040E2 	sub     r0, r0, #IRQ_STACK_SIZE
+ 245              	
+ 246              	/*- Set up Supervisor Mode and set Supervisor Mode Stack*/
+ 247              	//				/* start with INT and FIQ enabled */
+ 248 0090 13F021E3 	msr     CPSR_c, #ARM_MODE_SVC 
+ 249              	
+ 250              	/* start with INT and FIQ disabled */
+ 251              	//msr     CPSR_c, #ARM_MODE_SVC | I_BIT | F_BIT 
+ 252 0094 00D0A0E1 	mov     sp, r0                     /* Init stack Sup */
+ 253              	
+ 254              	/*- Enable interrupt & Set up Supervisor Mode and set Supervisor Mode Stack*/
+ 255              	
+ 256              	/* Relocate .data section (Copy from ROM to RAM) 
+ 257              	   This will also copy the .vectmapped and .fastrun */
+ 258 0098 74109FE5 	LDR     R1, =_etext
+ 259 009c 74209FE5 	LDR     R2, =_data
+ 260 00a0 74309FE5 	LDR     R3, =_edata
+ 261              	LoopRel:        
+ 262 00a4 030052E1 	CMP     R2, R3
+ 263 00a8 04009134 	LDRLO   R0, [R1], #4
+ 264 00ac 04008234 	STRLO   R0, [R2], #4
+ 265 00b0 2700003A 	BLO     LoopRel
+ 266              	
+ 267              	/* Clear .bss section (Zero init) */
+ 268 00b4 0000A0E3 	MOV     R0, #0
+ 269 00b8 60109FE5 	LDR     R1, =__bss_start__
+ 270 00bc 60209FE5 	LDR     R2, =__bss_end__
+ 271              	LoopZI:         
+ 272 00c0 020051E1 	CMP     R1, R2
+ 273 00c4 04008134 	STRLO   R0, [R1], #4
+ 274 00c8 2E00003A 	BLO     LoopZI
+ 275              	
+ 276              	/* call C++ constructors of global objects */
+ 277 00cc 54009FE5 	LDR 	r0, =__ctors_start__
+ 278 00d0 54109FE5 	LDR 	r1, =__ctors_end__
+ 279              	ctor_loop: 
+ 280 00d4 010050E1 	CMP 	r0, r1
+ 281 00d8 3B00000A 	BEQ 	ctor_end
+ 282 00dc 042090E4 	LDR 	r2, [r0], #4
+ 283 00e0 03002DE9 	STMFD 	sp!, {r0-r1}
+ 284 00e4 0FE0A0E1 	MOV 	lr, pc
+ 285              	/* MOV 	pc, r2 */
+ 286 00e8 12FF2FE1 	BX r2 /* mthomas 8/2006 */
+ 287 00ec 0300BDE8 	LDMFD 	sp!, {r0-r1}
+ 288 00f0 330000EA 	B 		ctor_loop
+ 289              	ctor_end:
+ 290              	
+ 291              	/* call main() */
+ 292 00f4 34E09FE5 	ldr	lr,=exit
+ 293 00f8 34009FE5 	ldr	r0,=main
+ 294 00fc 10FF2FE1 	bx	r0
+ 295              	
+ 297              	.endfunc
+ 298              	
+ 299              	/* "exit" dummy added by mthomas to avoid sbrk write read etc. needed
+ 300              	   by the newlib default "exit" */
+ 301              	.global exit
+ 302              	.func   exit
+ 303              	exit:
+ 304 0100 3E0000EA 	b    .
+ 306              	.endfunc
+ 307              		
+ 308              	/*------------------------------------------------------------------------------
+ 309              	//*- Manage exception
+ 310              	//*---------------
+ 311              	//*- This module The exception must be ensure in ARM mode
+ 312              	//*------------------------------------------------------------------------------
+ 313              	//*------------------------------------------------------------------------------
+ 314              	//*- Function             : IRQ_Handler_Entry
+ 315              	//*- Treatments           : IRQ Controller Interrupt Handler.
+ 316              	//*- Called Functions     : AIC_IVR[interrupt] 
+ 317              	//*------------------------------------------------------------------------------*/
+ 318              	
+ 319              	.if (VECTREMAPPED)
+ 320              	.print "IRQ_Handler_Entry in section .fastrun -> .data"
+ 321              	.section .fastrun, "ax"
+ 322              	.else
+ 323              	.print "IRQ_Handler_Entry in section .init -> .text"
+ 324              	.section .init, "ax"
+ 325              	.endif
+ 326              	
+ 327              	.global IRQ_Handler_Entry
+ 328              	.func   IRQ_Handler_Entry
+ 329              	IRQ_Handler_Entry:
+ 330              	/*---- Adjust and save return address on the stack */
+ 331 0000 04E04EE2 	sub     lr, lr, #4
+ 332 0004 00402DE9 	stmfd   sp!, {lr}
+ 333              	
+ 334              	/*---- Save r0 and SPSR on the stack */
+ 335 0008 00E04FE1 	mrs     r14, SPSR
+ 336 000c 01402DE9 	stmfd   sp!, {r0, r14}
+ 337              	
+ 338              	/*---- Write in the IVR to support Protect mode */
+ 339              	/*---- No effect in Normal Mode */
+ 340              	/*---- De-assert NIRQ and clear the source in Protect mode */
+ 341 0010 3CE09FE5 	ldr     r14, =AT91C_BASE_AIC
+ 342 0014 00019EE5 	ldr     r0, [r14, #AIC_IVR]
+ 343 0018 00E18EE5 	str     r14, [r14, #AIC_IVR]
+ 344              	
+ 345              	/*---- Enable nested interrupts and switch to Supervisor mode */
+ 346 001c 13F021E3 	msr     CPSR_c, #ARM_MODE_SVC
+ 347              	
+ 348              	/*---- Save scratch/used registers and LR on the stack */
+ 349 0020 0E502DE9 	stmfd   sp!, {r1-r3, r12, r14}
+ 350              	
+ 351              	/*---- Branch to the routine pointed by AIC_IVR */
+ 352 0024 0FE0A0E1 	mov     r14, pc
+ 353 0028 10FF2FE1 	bx      r0
+ 354              	
+ 355              	/*---- Restore scratch/used registers and LR from the stack */
+ 356 002c 0E50BDE8 	ldmia   sp!, {r1-r3, r12, r14}
+ 357              	
+ 358              	/*---- Disable nested interrupts and switch back to IRQ mode */
+ 359 0030 92F021E3 	msr     CPSR_c, #I_BIT | ARM_MODE_IRQ
+ 360              	
+ 361              	/*---- Acknowledge interrupt by writing AIC_EOICR */
+ 362 0034 18E09FE5 	ldr     r14, =AT91C_BASE_AIC
+ 363 0038 30E18EE5 	str     r14, [r14, #AIC_EOICR]
+ 364              	
+ 365              	/*---- Restore SPSR and r0 from the stack */
+ 366 003c 0140BDE8 	ldmia   sp!, {r0, r14}
+ 367 0040 0EF06FE1 	msr     SPSR_cxsf, r14
+ 368              	
+ 369              	/*---- Return from interrupt handler */
+ 370 0044 0080FDE8 	ldmia   sp!, {pc}^
+ 371              	
+ 373              	.endfunc
+ 374              	
+ 375              	/*---------------------------------------------------------------
+ 376              	//* ?EXEPTION_VECTOR
+ 377              	//* This module is only linked if needed for closing files.
+ 378              	//*---------------------------------------------------------------*/
+ 379              	.global AT91F_Default_FIQ_handler
+ 380              	.func   AT91F_Default_FIQ_handler
+ 381              	AT91F_Default_FIQ_handler:
+ 382 0048 FEFFFFEA 	b     AT91F_Default_FIQ_handler
+ 384              	.endfunc
+ 385              	
+ 386              	.global AT91F_Default_IRQ_handler
+ 387              	.func   AT91F_Default_IRQ_handler
+ 388              	AT91F_Default_IRQ_handler:
+ 389 004c FEFFFFEA 	b     AT91F_Default_IRQ_handler
+ 391              	.endfunc
+ 392              	
+ 393              	.global AT91F_Spurious_handler
+ 394              	.func   AT91F_Spurious_handler
+ 395              	AT91F_Spurious_handler:
+ 396 0050 FEFFFFEA 	b     AT91F_Spurious_handler
+ 398              	.endfunc
+ 399              	
+ 400 0054 00F0FFFF 	.end
+DEFINED SYMBOLS
+                            *ABS*:00000000 Cstartup.S
+          Cstartup.S:9      *ABS*:00000000 RAM_MODE
+          Cstartup.S:11     *ABS*:00000001 REMAP
+          Cstartup.S:12     *ABS*:00000001 VECTREMAPPED
+          Cstartup.S:41     *ABS*:00000100 AIC_IVR
+          Cstartup.S:42     *ABS*:00000104 AIC_FVR
+          Cstartup.S:43     *ABS*:00000130 AIC_EOICR
+          Cstartup.S:44     *ABS*:fffff000 AT91C_BASE_AIC
+          Cstartup.S:64     .vectmapped:00000000 $a
+          Cstartup.S:109    .vectmapped:00000044 Reset_Addr
+          Cstartup.S:110    .vectmapped:00000048 Undef_Addr
+          Cstartup.S:111    .vectmapped:0000004c SWI_Addr
+          Cstartup.S:113    .vectmapped:00000050 PAbt_Addr
+          Cstartup.S:114    .vectmapped:00000054 DAbt_Addr
+          Cstartup.S:115    .vectmapped:00000058 IRQ_Addr
+          Cstartup.S:71     .vectmapped:0000001c fiqvec
+          Cstartup.S:78     .vectmapped:0000001c FIQ_Handler_Entry
+                            *ABS*:00000080 I_BIT
+                            *ABS*:00000040 F_BIT
+                            *ABS*:00000013 ARM_MODE_SVC
+                            *ABS*:00000011 ARM_MODE_FIQ
+          Cstartup.S:109    .vectmapped:00000044 $d
+          Cstartup.S:144    .init:00000028 InitReset
+          Cstartup.S:116    .vectmapped:0000005c Undef_Handler
+          Cstartup.S:117    .vectmapped:00000060 SWI_Handler
+          Cstartup.S:118    .vectmapped:00000064 PAbt_Handler
+          Cstartup.S:119    .vectmapped:00000068 DAbt_Handler
+          Cstartup.S:329    .fastrun:00000000 IRQ_Handler_Entry
+          Cstartup.S:116    .vectmapped:0000005c $a
+          Cstartup.S:125    .init:00000000 _startup
+          Cstartup.S:126    .init:00000000 reset
+          Cstartup.S:130    .init:00000000 $a
+          Cstartup.S:138    .init:00000020 Reset_Addr_F
+          Cstartup.S:138    .init:00000020 $d
+          Cstartup.S:141    .init:00000024 .RAM_TOP
+          Cstartup.S:151    *ABS*:ffffff00 MC_BASE
+          Cstartup.S:152    *ABS*:00000000 MC_RCR
+          Cstartup.S:155    .init:00000028 $a
+          Cstartup.S:183    .init:00000060 already_remapped
+          Cstartup.S:218    *ABS*:00000060 IRQ_STACK_SIZE
+          Cstartup.S:219    *ABS*:00000060 FIQ_STACK_SIZE
+          Cstartup.S:221    *ABS*:00000012 ARM_MODE_IRQ
+          Cstartup.S:223    *ABS*:0000001f ARM_MODE_SYS
+          Cstartup.S:261    .init:000000a4 LoopRel
+          Cstartup.S:271    .init:000000c0 LoopZI
+          Cstartup.S:279    .init:000000d4 ctor_loop
+          Cstartup.S:289    .init:000000f4 ctor_end
+          Cstartup.S:303    .init:00000100 exit
+          Cstartup.S:331    .fastrun:00000000 $a
+          Cstartup.S:381    .fastrun:00000048 AT91F_Default_FIQ_handler
+          Cstartup.S:388    .fastrun:0000004c AT91F_Default_IRQ_handler
+          Cstartup.S:395    .fastrun:00000050 AT91F_Spurious_handler
+          Cstartup.S:400    .fastrun:00000054 $d
+          Cstartup.S:321    .init:00000104 $d
+
+UNDEFINED SYMBOLS
+__TOP_STACK
+__FIRST_IN_RAM
+AT91F_LowLevelInit
+_etext
+_data
+_edata
+__bss_start__
+__bss_end__
+__ctors_start__
+__ctors_end__
+main

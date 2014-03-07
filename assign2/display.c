@@ -401,41 +401,31 @@ void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
 }
 
 
-/*
- *	Refresh time with spinning
- */
+ULONG ss = 0;
+ULONG mm = 0;
+ULONG hh = 0;
+
 void DisplayPrintTimeBusy(void){
 
-	ULONG ss = 0;
-	ULONG mm = 0;
-	ULONG hh = 0;
-
-	while(1)
-		{
 		// Spin 1 sec
-                spindelayms(1000);
-                ss++;
-
+  	++ss;
+		
 		// Reset sec
-		if(ss == 60)
-			{
-			mm++;
+		if(ss == 60){
+			++mm;
 			ss = 0;
-			}
+		}
 
 		// Reset min
-		if(mm == 60)
-			{
-			hh++;
+		if(mm == 60){
+			++hh;
 			mm = 0;
-			}
+		}
 
 		// Reset hours
-		if(hh == 24)
-			{
-			hh = 0;
-			}
-
-                DisplayPrintTime(hh, mm, ss);
+		if(hh == 24){
+			hh = 0; 
 		}
+    
+		DisplayPrintTime(hh, mm, ss);
 }
