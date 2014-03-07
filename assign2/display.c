@@ -413,7 +413,7 @@ void DisplayPrintTimeBusy(void){
 	while(1)
 		{
 		// Spin 1 sec
-                spindelayms(1);
+                spindelayms(1000);
                 ss++;
 
 		// Reset sec

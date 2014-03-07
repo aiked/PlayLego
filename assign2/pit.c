@@ -62,7 +62,7 @@ void spindelayms(ULONG ms){
 	PITEnable();
         while(1)
                 {
-                if(PITTicks2s(PITRead()) >= 1)
+                if(PITTicks2ms(PITRead()) >= ms)
                         {
 			PITDisable();
 			break;
