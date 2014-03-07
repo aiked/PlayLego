@@ -1,4 +1,4 @@
-#include  "display.h"
+#include "display.h"
 #include "pit.h"
 #include "AT91SAM7S256.h"
 
@@ -401,6 +401,9 @@ void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
 }
 
 
+/*
+ *	Refresh time with spinning
+ */
 void DisplayPrintTimeBusy(void){
 
 	ULONG ss = 0;
@@ -408,26 +411,31 @@ void DisplayPrintTimeBusy(void){
 	ULONG hh = 0;
 
 	while(1)
-                {
+		{
+		// Spin 1 sec
                 spindelayms(1);
                 ss++;
 
+		// Reset sec
 		if(ss == 60)
 			{
 			mm++;
 			ss = 0;
 			}
 
+		// Reset min
 		if(mm == 60)
 			{
 			hh++;
 			mm = 0;
 			}
 
+		// Reset hours
 		if(hh == 24)
 			{
 			hh = 0;
 			}
+
                 DisplayPrintTime(hh, mm, ss);
-        }
+		}
 }

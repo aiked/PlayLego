@@ -66,20 +66,7 @@ void spindelayms(ULONG ms){
                         {
 			PITDisable();
 			break;
-//                      temp++;
-//	                DisplayNum(1,10,10,temp);
-//			unsigned int status = AT91C_BASE_PITC->PITC_PIVR;
                         }
-/*		if(AT91C_BASE_PITC->PITC_PISR == 0)
-                        {
-                        temp2++;
-                        DisplayNum(1,10,30,temp2);
-                        //unsigned int status = AT91C_BASE_PITC->PITC_PIVR;
-                        }
-
-		DisplayUpdateSync();
-*/
                 }
-
 }
 
