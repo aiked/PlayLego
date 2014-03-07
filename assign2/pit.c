@@ -19,19 +19,16 @@ void PITEnable(void){
 void PITDisable(void){
 	AT91C_BASE_PITC->PITC_PIMR &= ~AT91C_PITC_PITIEN;
 	volatile ULONG status;
-	status = AT91C_BASE_PITC->PITC_PIVR;    // Read & Reset
-
+	status = AT91C_BASE_PITC->PITC_PIVR;    // Read & Reset on read
 }
 
 
 /*
- *	Reads the PIT status
+ *	Reads the PIT counters
  */
 ULONG PITRead(void){
-	volatile ULONG status;
-//      status = AT91C_BASE_PITC->PITC_PIVR;    // Read & Reset
-        status = AT91C_BASE_PITC->PITC_PIIR;    // Read Only
-	return status;
+//      return AT91C_BASE_PITC->PITC_PIVR;    // Read & Reset
+        return AT91C_BASE_PITC->PITC_PIIR;    // Read Only
 }
 
 
@@ -39,19 +36,15 @@ ULONG PITRead(void){
  *      Ticks to ms
  */
 UWORD PITTicks2ms(ULONG ticks){
-        UWORD ms;
-        ms = ticks / 3000;
-        return ms;
+  return ticks / 3000;
 }
 
 
 /*
- *      Ticks to sec
+ *      Converts ticks to seconds
  */
 UWORD PITTicks2s(ULONG ticks){
-        UWORD sec;
-        sec = PITTicks2ms(ticks) / 1000;
-        return sec;
+	return ticks / 3000000;
 }
 
 
@@ -60,13 +53,11 @@ UWORD PITTicks2s(ULONG ticks){
  */
 void spindelayms(ULONG ms){
 	PITEnable();
-        while(1)
-                {
-                if(PITTicks2ms(PITRead()) >= ms)
-                        {
+  while(1){
+    if(PITTicks2ms(PITRead()) >= ms){
 			PITDisable();
-			break;
-                        }
-                }
+			break; 
+			}
+	}
 }
 
