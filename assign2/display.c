@@ -383,7 +383,7 @@ void      DisplayString(UBYTE X,UBYTE Y,UBYTE *pString)
 
 #define START_HEIGHT 27
 void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
-	
+
 	DisplayNum(1, 20, START_HEIGHT, hh/10);
 	DisplayNum(1, 25, START_HEIGHT, hh%10);
 
@@ -401,31 +401,3 @@ void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
 }
 
 
-ULONG ss = 0;
-ULONG mm = 0;
-ULONG hh = 0;
-
-void DisplayPrintTimeBusy(void){
-
-		// Spin 1 sec
-  	++ss;
-		
-		// Reset sec
-		if(ss == 60){
-			++mm;
-			ss = 0;
-		}
-
-		// Reset min
-		if(mm == 60){
-			++hh;
-			mm = 0;
-		}
-
-		// Reset hours
-		if(hh == 24){
-			hh = 0; 
-		}
-    
-		DisplayPrintTime(hh, mm, ss);
-}

@@ -1,43 +1,45 @@
 #include "AT91SAM7S256.h"
 #include "pit.h"
 
-#define PIV_1_SEC               3000000  // 1 sec for 48 MHz
-
+#define PIV_1_SEC 3000000
 
 void PITEnable(void){
 				     /*	0x1 << 24     |	     0x1 << 25 */
-	AT91C_BASE_PITC->PITC_PIMR = AT91C_PITC_PITEN | AT91C_PITC_PITIEN | PIV_1_SEC;
+	AT91C_BASE_PITC->PITC_PIMR = AT91C_PITC_PITEN | AT91C_PITC_PITIEN;
 }
 
 
 void PITDisable(void){
 	AT91C_BASE_PITC->PITC_PIMR &= ~AT91C_PITC_PITIEN;
-	volatile ULONG status;
-	status = AT91C_BASE_PITC->PITC_PIVR;    
+	AT91C_BASE_PITC->PITC_PIVR;    
 }
 
 
 ULONG PITRead(void){
-        return AT91C_BASE_PITC->PITC_PIIR;    
+  return AT91C_BASE_PITC->PITC_PIIR;    
 }
 
 
 ULONG PITReadReset(void){
-	volatile ULONG retval = AT91C_BASE_PITC->PITC_PIVR;
-	return retval;
+	return AT91C_BASE_PITC->PITC_PIVR;
 }
 
 
-void      PITInterruptEnable(ULONG period, void (*handler)(void)){
+void PITInterruptEnable(ULONG period, void (*handler)(void)){
+	AT91C_BASE_PITC->PITC_PIMR = AT91C_PITC_PITEN | AT91C_PITC_PITIEN | period;
 	AICInterruptEnable( AT91C_ID_SYS ,handler);
-	PITEnable();
-
 }
 
 
-void      PITInterruptDisable(void){
-	
+void PITInterruptDisable(void){
+	AT91C_BASE_PITC->PITC_PIMR &= ~AT91C_PITC_PITIEN;
+	AT91C_BASE_PITC->PITC_PIVR;
+	AICInterruptDisable( AT91C_ID_SYS );
+}
 
+void PITAckInterrupt(void){
+	PITReadReset();
+	AT91C_BASE_AIC->AIC_EOICR = 0x1;
 }
 
 
@@ -52,7 +54,10 @@ UWORD PITTicks2s(ULONG ticks){
 
 
 void spindelayms(ULONG ms){
-	PITEnable();
+	
+	AT91C_BASE_PITC->PITC_PIMR = AT91C_PITC_PITEN | AT91C_PITC_PITIEN;
+	AT91C_BASE_PITC->PITC_PIMR |= PIV_1_SEC;
+
   while(1){
     if(  (AT91C_BASE_PITC->PITC_PIIR/3000)>ms){
 			PITDisable();
