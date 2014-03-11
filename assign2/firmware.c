@@ -57,7 +57,7 @@ int main(void){
 	while(1){
 		// Beep every 10 seconds
 		if ((seconds % 10) == 0){
-			SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
+			//SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
 		}
 	}
 

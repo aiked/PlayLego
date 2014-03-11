@@ -45,17 +45,42 @@
 		in the best way the interrupts coming from the SSC and the Periodic
 		Interval Timer without losing neither of them.
 
-		--5.2
+	--5.2
 		As stated in question 3.2 the maximum value we can put to CPIV is
 		0xFFFFF due to 20-bit limitation. That being said, the PICNT is 
 		increased every 1048575 cycles or every 0.346 seconds at a frequency
 		of 2.89 Hz. So, the minimum possible frequency is 2.89 Hz.
 
 	--6.4
-		// TO DO TEXT
+		Everything seems to work fine, but the time we tested the "1 per sec"
+		was limited due to high disconfort the sound causes.
 
-	--7.*
-		// OPTIONAL
-		// TO DO TEXT
+	--7.1
+		The maximum period we could count was 5:00 minutes due to limitations
+		from the power manager of LEGO NXT. During that time, 5 minutes, we 
+		failed to notice any drop of accuracy. Still, it is expected that over
+		a longer period of time the accuracy will drop over he fact that with 
+		every second we lose around 0.0001 seconds. For better accuracy it is
+		needed to choose a better time for the interrupt frequency.
+
+	--7.2
+		We implement our system using level interrupts and it is possible an
+		interrupt to be lost or be delaying during its processing. The reason
+		is that is possible another interrupt will come in and change the flow.
+		If an interrupt from PIT is lost then the clock will lose 0.33 seconds 
+		from the counting process. In the case of SSC it is possible an
+		interrupt to be lost and alter the sound output.
+
+	--7.3
+		Our implementation uses level triggered interrupts. There is a  proper
+		vector of 8 length to support nested interrupts. When an interrupts 
+		happens and another come, with higher priority, the proper changes 
+		happens and accommodate the changes of order and the execution of both
+		interrupts.
+
+	--7.4
+		The sound is imported to the sound controller(SUNPLUS) from a PWM source
+		and is transformed from digital to analog. After that the controller 
+		feeds the speaker with the analog data to the line and produces the sound.
 
 -- EOF

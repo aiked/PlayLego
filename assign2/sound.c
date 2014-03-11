@@ -1,4 +1,3 @@
-#include <stdconst.h>
 #include "AT91SAM7S256.h"
 #include "sound.h"
 
@@ -23,7 +22,7 @@ void SoundInit(void){
 	*AT91C_PIOA_IDR   = AT91C_PA17_TD;
 	*AT91C_SSC_CR   = AT91C_SSC_SWRST;
 	*AT91C_SSC_TCMR = AT91C_SSC_CKS_DIV + 
-		    AT91C_SSC_CKO_CONTINOUS + AT91C_SSC_START_CONTINOUS;
+		    						AT91C_SSC_CKO_CONTINOUS + AT91C_SSC_START_CONTINOUS;
 	*AT91C_SSC_TFMR = (-1)+(((sizeof(ULONG)*8) & 0xF) << 8) + AT91C_SSC_MSBF;
 	*AT91C_SSC_CR   = AT91C_SSC_TXEN;         /* TX enable */
 }
@@ -65,12 +64,12 @@ void sound_handler(void){
 
 void SoundAsync(ULONG *pattern, UBYTE length, UBYTE rate, UWORD duration){
 	SoundEnable();
-        *AT91C_SSC_CMR = (4095 - 12 * rate);
+  *AT91C_SSC_CMR = (4095 - 12 * rate);
 	GLENGTH = length;
 	count = 0;
 	GDURATION = duration;
 	GPATTERN = *pattern;
-        SoundIntEnable(sound_handler);
+  SoundIntEnable(sound_handler);
 }
 
 
@@ -99,5 +98,5 @@ void SoundIntEnable(void (*handler)(void)){
 
 void SoundIntDisable(void){
 	*AT91C_SSC_IER |= AT91C_SSC_ENDTX;
-	AICInterruptDisable( AT91C_ID_SYS );
+	AICInterruptDisable( AT91C_ID_SSC );
 }
