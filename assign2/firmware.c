@@ -4,14 +4,38 @@
 #include "sound.h"
 #include "clock.h"
 
-/*
-#if using PIT interrupts
+
+volatile UWORD hours = 0;
+volatile UWORD minutes = 0;
+volatile UWORD seconds = 0;
+volatile UWORD interrupts = 0;
+ 
 void pit_handler(void){
-	// do your thing here
-	// update time on display every second
+
+	++interrupts;
+
+	if((interrupts % 3) == 0){
+		++seconds;
+
+		if(seconds == 60){
+			seconds = 0;
+			minutes++;
+		}
+		
+		if(minutes == 60){
+			minutes = 0;
+			hours++;
+		}
+
+		if(hours == 24){
+			hours = 0;
+		}
+
+	DisplayPrintTime(hours ,minutes ,seconds); 
+	}
+	
+	PITAckInterrupt();
 }
-#endif
-*/
 
 
 int main(void){
@@ -23,26 +47,21 @@ int main(void){
 	DisplayOn(1);
 	
 	//DisplayPrintTimeBusy();
-	PITInterruptEnable( 0xF4240 , DisplayTime_PIT );
+	PITInterruptEnable(0xF4240 , pit_handler);
 
 	ULONG pattern[] = {0xFF00FF00};
-
-//  	SoundSync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
-/*
-	while ( 1 ) {
-		// update time on display every second
-		if (ten seconds elapsed) {
+	
+	while(1){
+		if ((seconds % 10) == 0){
 			SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
 		}
 	}
-*/
 
 	// cleanup here
-/*	SoundExit();
+	SoundExit();
 	PITDisable();
 	PITInterruptDisable();
-	SoundExit();
 	DisplayExit();
-*/
+
 	return 0;
 }

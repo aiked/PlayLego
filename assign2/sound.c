@@ -54,29 +54,24 @@ void SoundSync(ULONG *pattern, UBYTE length, UBYTE rate, UWORD duration) {
 
 
 void sound_handler(void){
-	if(count++ <= GDURATION)
-		{
+
+	if(GDURATION-- > 0)
 		*AT91C_SSC_THR = GPATTERN;
-		}
-	else
-		{
-		count = 0;
-//		SoundDisable();
-		}	
+	else{
+		SoundDisable();
+	}
 }
 
 
 void SoundAsync(ULONG *pattern, UBYTE length, UBYTE rate, UWORD duration){
 	SoundEnable();
         *AT91C_SSC_CMR = (4095 - 12 * rate);
-//	*AT91C_SSC_THR = pattern;
 	GLENGTH = length;
 	count = 0;
 	GDURATION = duration;
 	GPATTERN = *pattern;
         SoundIntEnable(sound_handler);
 }
-
 
 
 void SoundExit(void){
@@ -104,6 +99,5 @@ void SoundIntEnable(void (*handler)(void)){
 
 void SoundIntDisable(void){
 	*AT91C_SSC_IER |= AT91C_SSC_ENDTX;
-	*AT91C_PIOA_IDR = PIO_IDR_DIS0;
 	AICInterruptDisable( AT91C_ID_SYS );
 }
