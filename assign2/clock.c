@@ -1,12 +1,11 @@
 #include "clock.h"
 
 
-volatile ULONG hh = 0;
-volatile ULONG mm = 0;
-volatile ULONG ss = 0;
-volatile UBYTE sec_to_beep = 0;
+ULONG hh = 0;
+ULONG mm = 0;
+ULONG ss = 0;
 // Interrupt counter
-volatile UBYTE in = 0;
+UBYTE in = 0;
 
 void DisplayTime_PIT(void){
 

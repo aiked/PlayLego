@@ -5,10 +5,10 @@
 #include "clock.h"
 
 
-volatile UWORD hours = 0;
-volatile UWORD minutes = 0;
-volatile UWORD seconds = 0;
-volatile UWORD interrupts = 0;
+UWORD hours = 0;
+UWORD minutes = 0;
+UWORD seconds = 0;
+UWORD interrupts = 0;
  
 void pit_handler(void){
 
@@ -17,16 +17,19 @@ void pit_handler(void){
 	if((interrupts % 3) == 0){
 		++seconds;
 
+		// Reset seconds
 		if(seconds == 60){
 			seconds = 0;
-			minutes++;
+			++minutes;
 		}
 		
+		// Reset minutes
 		if(minutes == 60){
 			minutes = 0;
-			hours++;
+			++hours;
 		}
 
+		// Reset hours
 		if(hours == 24){
 			hours = 0;
 		}
@@ -52,6 +55,7 @@ int main(void){
 	ULONG pattern[] = {0xFF00FF00};
 	
 	while(1){
+		// Beep every 10 seconds
 		if ((seconds % 10) == 0){
 			SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
 		}
