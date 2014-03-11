@@ -14,8 +14,10 @@ void AICInterruptEnable(int which, void (*handler)(void)){
 	switch(which){
 		case AT91C_ID_SYS: // Priority 0x7
 			AT91C_AIC_SMR[which] = AT91C_AIC_SRCTYPE_INT_LEVEL_SENSITIVE | AT91C_AIC_PRIOR_HIGHEST;
+			break;
 		case AT91C_ID_SSC: // Priority 0x6
 			AT91C_AIC_SMR[which] = AT91C_AIC_SRCTYPE_EXT_HIGH_LEVEL | ((unsigned int) 0x6);
+			break;
 	}
 
 	// Assign handler function inside vector
