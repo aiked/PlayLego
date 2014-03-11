@@ -17,32 +17,32 @@ void pit_handler(void){
 int main(void){
 
 	AICInit();
+	SoundInit();
 	
 	DisplayInit();
-	SoundInit();
 	DisplayOn(1);
 	
 	//DisplayPrintTimeBusy();
 	PITInterruptEnable( 0xF4240 , DisplayTime_PIT );
 
-	/*
 	ULONG pattern[] = {0xFF00FF00};
-  //
-  // init here 
-  //
-  SoundSync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
 
-  while ( 1 ) {
-    // update time on display every second
-    if (ten seconds elapsed) {
-      SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
-    }
-  }
+//  	SoundSync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
+/*
+	while ( 1 ) {
+		// update time on display every second
+		if (ten seconds elapsed) {
+			SoundAsync(pattern, sizeof(pattern)/sizeof(ULONG), 100, 10);
+		}
+	}
+*/
 
-  //
-  // cleanup here
-  //
-	*/
-
+	// cleanup here
+/*	SoundExit();
+	PITDisable();
+	PITInterruptDisable();
+	SoundExit();
+	DisplayExit();
+*/
 	return 0;
 }

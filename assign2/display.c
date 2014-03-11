@@ -399,5 +399,3 @@ void DisplayPrintTime(UBYTE hh, UBYTE mm, UBYTE ss){
 
 	DisplayUpdateSync();
 }
-
-
