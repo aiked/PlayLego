@@ -5,8 +5,8 @@
 
 UBYTE GLENGTH;
 UWORD GDURATION;
-ULONG *GPATTERN;
-int count;
+ULONG GPATTERN;
+
 
 void SoundInit(void){
 
@@ -54,8 +54,9 @@ void SoundSync(ULONG *pattern, UBYTE length, UBYTE rate, UWORD duration) {
 
 void sound_handler(void){
 
-	if(GDURATION-- > 0)
-		*AT91C_SSC_THR = GPATTERN;
+	if(GDURATION-- > 0){
+			*AT91C_SSC_THR = GPATTERN;
+		}
 	else{
 		SoundDisable();
 	}
@@ -64,12 +65,11 @@ void sound_handler(void){
 
 void SoundAsync(ULONG *pattern, UBYTE length, UBYTE rate, UWORD duration){
 	SoundEnable();
-  *AT91C_SSC_CMR = (4095 - 12 * rate);
+	*AT91C_SSC_CMR = (4095 - 12 * rate);
 	GLENGTH = length;
-	count = 0;
 	GDURATION = duration;
 	GPATTERN = *pattern;
-  SoundIntEnable(sound_handler);
+  	SoundIntEnable(sound_handler);
 }
 
 

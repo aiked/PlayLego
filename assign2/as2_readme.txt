@@ -3,8 +3,8 @@
 		due: 12/03/2014
 
 - Team Members
-		Ntegiannis Dimitris		2731	deyannis@cs.uoc.gr
-		Athanasakis Michalis	858		michath@csd.uoc.gr
+		Ntegiannis Dimitris	2731	deyannis@cs.uoc.gr
+		Athanasakis Michalis	858	michath@csd.uoc.gr
 
 - Answers
 	
@@ -82,5 +82,13 @@
 		The sound is imported to the sound controller(SUNPLUS) from a PWM source
 		and is transformed from digital to analog. After that the controller 
 		feeds the speaker with the analog data to the line and produces the sound.
+
+	--7.5
+		The volume of the sound can be controled via changes to the pattern.
+		Patern 0xFFFF0000 will be of higher volume of the patern 0xF0000000.
+
+	--7.6
+		Specific tones can be generated via changing the rate, thus changing the
+		frequency.
 
 -- EOF
