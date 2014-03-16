@@ -4,10 +4,7 @@
 
 #define   DISPLAY_HEIGHT      64        // Y pixels
 #define   DISPLAY_WIDTH       100       // X pixels
-
-#define	  CMD		0
-#define	  DAT		1
-#define   DISP_LINES    (DISPLAY_HEIGHT/8)
+#define   DISP_LINES 					8					// (DISPLAY_HEIGHT/8)
 
 static struct {
   UBYTE   DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
@@ -38,6 +35,18 @@ typedef struct
   UBYTE   Data[];
 } __attribute__((__packed__)) FONT, ICON;
 
+UBYTE     DisplayLineString[DISP_LINES][3] =
+{
+  { 0xB0,0x10,0x00  },
+	{ 0xB1,0x10,0x00  },
+	{ 0xB2,0x10,0x00  },
+	{ 0xB3,0x10,0x00  },
+	{ 0xB4,0x10,0x00  },
+	{ 0xB5,0x10,0x00  },
+	{ 0xB6,0x10,0x00  },
+	{ 0xB7,0x10,0x00  }
+};
+
 const ICON Font = {
   // each character is 6x8 pixels represented as 6 bytes, where each byte is a "column" of 8 pixels
   0x06,      // Graphics Width
@@ -58,5 +67,46 @@ void DisplayInit(void){
 	// DisplayErase();
 }
 
-
 void DisplayExit(void){ return; }
+
+UBYTE DisplayWrite( UBYTE type, UBYTE *data, UWORD length  ){
+	if ( SPITxReady() ){
+		switch(type){
+			case COMMAND:
+				SPIPIOClearData();
+				break;
+			case DATA:
+				SPIPIOSetData();
+				break;
+		}
+		// SPIWrite(data, length);
+		SPIWriteDMA(data, length);
+		return true;
+	}
+	return false;
+
+}
+
+
+void DisplayUpdateSync(void){
+	
+	UBYTE i;
+	UBYTE *pImage = (UBYTE*)IOMapDisplay.DataArray;
+
+	DisplayWrite(COMMAND, (UBYTE*) DisplayInitCommands, sizeof(DisplayInitCommands));
+
+	for(i=0;i<DISP_LINES; ++i){
+		while( DisplayWrite(COMMAND, (UBYTE*) DisplayLineString[i], 3) ){ ; }
+		while( DisplayWrite(DATA, (UBYTE*) &pImage[i*DISPLAY_WIDTH], DISPLAY_WIDTH ) ){ ; }
+	}
+}
+
+
+void DisplaySetPixel(UBYTE X,UBYTE Y){
+
+}
+
+
+void DisplayClrPixel(UBYTE X,UBYTE Y){
+	
+}
