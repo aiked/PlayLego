@@ -44,3 +44,63 @@ void SPIInit(void) {
 
 	return;
 }
+
+unsigned int SPITxReady(void){
+	return (unsigned int)(*AT91C_SPI_SR & AT91C_SPI_TXEMPTY);
+}
+
+
+unsigned int SPIRxREADY(void){
+	return (unsigned int)(*AT91C_SPI_SR & AT91C_SPI_RDRF);
+}
+
+
+void SPIPIOSetData(void){
+	*AT91C_PIOA_SODR = AT91C_PIO_PA12;
+}
+
+void SPIPIOClearData(void){
+	*AT91C_PIOA_CODR = AT91C_PIO_PA12;
+}
+
+void SPIWriteDMA(UBYTE *data, UBYTE length){
+	UBYTE i;
+
+	for(i=0;i<length;++i){
+		while(!SPITxReady()){ ; }
+		*AT91C_SPI_TDR = data[i];
+	}
+}
+
+
+void SPIRead(UBYTE *data, UBYTE length){
+	UBYTE i;
+
+	for(i=0;i<length;++i){
+		while(!SPIRxReady()){ ; }
+		// SPI_RD is used to cover the 4 ms bytes of register ??
+		data[i] = (*AT91C_SPI_RDR & AT91C_SPI_RD); 
+	}
+}
+
+
+void SPIWriteDMA(UBYTE *data, UBYTE length){
+	
+	// Loop until Transmit is possible
+	while(!SPITxREADY()){ ; }
+
+	*AT91C_SPI_PTCR = AT91C_PDC_TXTEN;
+	*AT91C_SPI_TPR = (unsigned int)data;
+	*AT91C_SPI_TCR = (unsigned int)length;
+}
+
+
+void SPIRead(UBYTE *data, UBYTE length){
+	
+	// Loop until Receive is possible
+	while(!SPIRxREADY()){ ; }
+
+	*AT91C_SPI_PRCR = AT91C_PDC_TXTEN;
+	*AT91C_SPI_RPR = (unsigned int)data;
+	*AT91C_SPI_RCR = (unsigned int)length;
+	}

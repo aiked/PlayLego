@@ -11,4 +11,10 @@ void SPIRead(UBYTE *, UBYTE);
 void SPIPIOSetData(void);
 void SPIPIOClearData(void);
 
+/*
+ * Bonus functionality using DMA
+ */
+void SPIWriteDMA(UBYTE *, UBYTE);
+void SPIReadDMA(UBYTE *, UBYTE);
+
 #endif

@@ -2,6 +2,7 @@
 #define   DISPLAY
 
 #include <stdconst.h>
+#include "spi.h"
 
 void      DisplayInit(void);
 void      DisplayExit(void);
