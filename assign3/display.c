@@ -193,17 +193,39 @@ void DisplayChar(UBYTE X, UBYTE Y, UBYTE Char){
 }
 
 
-void DisplayNum(UBYTE X,UBYTE Y,ULONG Num){
+void DisplayNum(UBYTE X, UBYTE Y, ULONG Num){
 
+	ULONG tmp_num = Num;
+	UBYTE digits = 0;
+	tmp_num /= 10;
+
+	while(tmp_num != 0){
+		digits++;
+		tmp_num /= 10;
+	}
+
+	UBYTE curr_x = X + (digits * 6);
+	do{
+		DisplayChar(curr_x, Y, ((UBYTE)(Num % 10) + 48));
+		Num = Num / 10;
+		curr_x -= 6;
+	}while(Num != 0);
 }
 
 
-void DisplayString(UBYTE X,UBYTE Y,UBYTE *pString){
+void DisplayString(UBYTE X, UBYTE Y, UBYTE *pString){
+	UBYTE* tmp_pString = pString;
+	UBYTE x = X;
 
+	while(*tmp_pString){
+		DisplayChar(x, Y, *tmp_pString);
+		x += 6;
+		*tmp_pString++;
+	}
 }
 
 
-UBYTE DisplayWrite( UBYTE type, UBYTE *data, UWORD length  ){
+UBYTE DisplayWrite(UBYTE type, UBYTE *data, UWORD length){
 	if ( SPITxReady() ){
 		switch(type){
 			case COMMAND:

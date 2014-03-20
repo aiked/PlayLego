@@ -45,7 +45,8 @@ void pit_handler(void){
 
 		DisplayAnalogClock( A_CLK_X, A_CLK_Y, A_CLK_R, hours, minutes, seconds );
 		DisplayDigitalClock( D_CLK_X, D_CLK_Y, hours, minutes, seconds );
-		
+		DisplayString(66, 10, "hello");		
+		DisplayString(66, 20, "clock");
 		DisplayUpdateSync();
 	}
 	
