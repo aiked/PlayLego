@@ -152,7 +152,7 @@ void DisplayClrPixel(UBYTE X, UBYTE Y){
 
 
 void DisplayLineX(UBYTE X1, UBYTE X2, UBYTE Y){
-	int x;
+	UBYTE x;
 
 	for(x = X1; x < X2; x++)
 		IOMapDisplay.DataArray[0][Y * DISPLAY_WIDTH + x] |= (1 << (Y % 8));
@@ -160,7 +160,7 @@ void DisplayLineX(UBYTE X1, UBYTE X2, UBYTE Y){
 
 
 void DisplayLineY(UBYTE X, UBYTE Y1, UBYTE Y2){
-	int y;
+	UBYTE y;
 
 	for(y = Y1; y < Y2; y++)
 		IOMapDisplay.DataArray[0][(y / 8) * DISPLAY_WIDTH + X] |= (1 << (y % 8));
@@ -168,7 +168,7 @@ void DisplayLineY(UBYTE X, UBYTE Y1, UBYTE Y2){
 
 
 void DisplayErase(void){
-	int x, y;
+	UBYTE x, y;
 
 	for(x = 0; x < 100; x++){
 		for(y = 0; y < 64; y++){
@@ -178,8 +178,18 @@ void DisplayErase(void){
 }
 
 
-void DisplayChar(UBYTE X,UBYTE Y,UBYTE Char){
+void DisplayChar(UBYTE X, UBYTE Y, UBYTE Char){
 
+	const ICON *ass3_Font = &Font;
+	UBYTE *char_matrix = (UBYTE*)&ass3_Font->Data[G_WIDTH * Char];
+
+	UBYTE x, y;
+	for(x = 0; x < G_WIDTH; ++x){
+	      for(y = 0; y < G_HEIGHT; ++y){
+			if((char_matrix[x] & (0x1<<y)) == (0x1<<y))
+				DisplaySetPixel(X+x, Y+y);
+	      }
+	}
 }
 
 
@@ -218,20 +228,19 @@ void DisplayDigitalClock(UBYTE cx, UBYTE cy, UBYTE hh, UBYTE mm, UBYTE ss){
 	DisplayChar(cx+11, cy, ':');
 
 	DisplayNum(cx+15, cy, mm/10);
-	DisplayNum(cx+20, cy, mm%10);
+	DisplayNum(cx+21, cy, mm%10);
 
-	DisplayChar(cx+25, cy, ':');
+	DisplayChar(cx+26, cy, ':');
 
-	DisplayNum(cx+29, cy, ss/10);
-	DisplayNum(cx+35, cy, ss%10);
-
-	}
+	DisplayNum(cx+30, cy, ss/10);
+	DisplayNum(cx+36, cy, ss%10);
+}
 
 
 void DisplayAnalogClock(UBYTE cx, UBYTE cy, UBYTE r, UBYTE hh, UBYTE mm, UBYTE ss){
 	AclockDisplayFrame(cx, cy, r);
-	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
-	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
-	AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
+//	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
+//	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
+//	AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
 	AclockDisplayFrameSymbol(cx, cy, r, 0);
 }

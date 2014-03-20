@@ -80,7 +80,7 @@ void AclockDisplayHand(UBYTE cx, UBYTE cy, UBYTE r, UWORD angle, Time_Mode_t mod
 
 void AclockDisplayFrameSymbol(UBYTE cx, UBYTE cy, UBYTE r, UWORD hh){
 	// Display Numeric Legend
-	DisplayNum(cx-9, cy-r-8, 12);
+	DisplayNum(cx-6, cy-r-8, 12);
 	DisplayNum(cx+r+2, cy-3, 3);
 	DisplayNum(cx-2, cy+r+2, 6);
 	DisplayNum(cx-r-6, cy-3, 9);

@@ -6,7 +6,7 @@
 #include "display.h"
 
 #define D_CLK_X 58
-#define D_CLK_Y 27
+#define D_CLK_Y 47
 
 #define A_CLK_X 28
 #define A_CLK_Y 31
