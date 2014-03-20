@@ -50,7 +50,7 @@ unsigned int SPITxReady(void){
 }
 
 
-unsigned int SPIRxREADY(void){
+unsigned int SPIRxReady(void){
 	return (unsigned int)(*AT91C_SPI_SR & AT91C_SPI_RDRF);
 }
 
@@ -59,11 +59,13 @@ void SPIPIOSetData(void){
 	*AT91C_PIOA_SODR = AT91C_PIO_PA12;
 }
 
+
 void SPIPIOClearData(void){
 	*AT91C_PIOA_CODR = AT91C_PIO_PA12;
 }
 
-void SPIWriteDMA(UBYTE *data, UBYTE length){
+
+void SPIWrite(UBYTE *data, UBYTE length){
 	UBYTE i;
 
 	for(i=0;i<length;++i){
@@ -87,7 +89,7 @@ void SPIRead(UBYTE *data, UBYTE length){
 void SPIWriteDMA(UBYTE *data, UBYTE length){
 	
 	// Loop until Transmit is possible
-	while(!SPITxREADY()){ ; }
+	while(!SPITxReady()){ ; }
 
 	*AT91C_SPI_PTCR = AT91C_PDC_TXTEN;
 	*AT91C_SPI_TPR = (unsigned int)data;
@@ -95,12 +97,12 @@ void SPIWriteDMA(UBYTE *data, UBYTE length){
 }
 
 
-void SPIRead(UBYTE *data, UBYTE length){
+void SPIReadDMA(UBYTE *data, UBYTE length){
 	
 	// Loop until Receive is possible
 	while(!SPIRxREADY()){ ; }
 
-	*AT91C_SPI_PRCR = AT91C_PDC_TXTEN;
+	*AT91C_SPI_RNCR = AT91C_PDC_TXTEN;
 	*AT91C_SPI_RPR = (unsigned int)data;
 	*AT91C_SPI_RCR = (unsigned int)length;
-	}
+}

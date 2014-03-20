@@ -1,43 +1,48 @@
+#include "assert.h"
 #include "AT91SAM7S256.h"
 #include "display.h"
 #include "spi.h"
 
-#define   DISPLAY_HEIGHT      64        // Y pixels
-#define   DISPLAY_WIDTH       100       // X pixels
-#define   DISP_LINES 					8					// (DISPLAY_HEIGHT/8)
+#define   DISPLAY_HEIGHT	64	// Y pixels
+#define   DISPLAY_WIDTH		100	// X pixels
+#define   DISP_LINES		8	// (DISPLAY_HEIGHT/8)
+
 
 static struct {
-  UBYTE   DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
+	UBYTE   DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
 } IOMapDisplay;
+
 
 UBYTE DisplayInitCommands[] =
 {
-  0xEB, // LCD bias: 1/9=0xEB
-  0x2F, // pump control: set build-in=0x2F
-  0xA4, // all pixels: off=0xA4, on=0xA5
-  0xA6, // inverse: off=0xA6, on=0xA7
-  0x40, // set scroll line: 0=0x40-63=0x7F
-  0x81, // set Vbias potentiometer (2-byte command): 0x81 
-  0x5A, //      -"-         		             : on=0x5A, off=0x00
-  0xC4, // LCD mapping: regular=0xC4, row-mirror=bit 2, col-mirror=bit 3, e.g. col-mirror=0xC2
-  0x27, // set temp comp.: -0.20%/C=0x27
-  0x29, // panel loading: <=15nF=0x28, >15nF=0x29
-  0xA0, // framerate: 76fps=0xA0, 95fps=0xA1
-  0x88, // RAM address control: no wrap around+no autoincremet=0x88
-  0x23, // set multiplex rate: 1:65=0x23
-  0xAF  // set display: on=0xAF, off=0xAE
+	0xEB, // [0]  LCD bias: 1/9=0xEB
+	0x2F, // [1]  pump control: set build-in=0x2F
+	0xA4, // [2]  all pixels: off=0xA4, on=0xA5
+	0xA6, // [3]  inverse: off=0xA6, on=0xA7
+	0x40, // [4]  set scroll line: 0=0x40-63=0x7F
+	0x81, // [5]  set Vbias potentiometer (2-byte command): 0x81 
+	0x5A, // [6]  -"-	             : on=0x5A, off=0x00
+	0xC4, // [7]  LCD mapping: regular=0xC4, row-mirror=bit 2,
+	//	col-mirror=bit 3, e.g. col-mirror=0xC2
+	0x27, // [8]  set temp comp.: -0.20%/C=0x27
+	0x29, // [9]  panel loading: <=15nF=0x28, >15nF=0x29
+	0xA0, // [10] framerate: 76fps=0xA0, 95fps=0xA1
+	0x88, // [11] RAM address control: no wrap around+no autoincremet=0x88
+	0x23, // [12] set multiplex rate: 1:65=0x23
+	0xAF  // [13] set display: on=0xAF, off=0xAE
 };
 
-typedef struct
-{
-  UBYTE   ItemPixelsX;
-  UBYTE   ItemPixelsY;
-  UBYTE   Data[];
+
+typedef struct{
+	UBYTE   ItemPixelsX;
+	UBYTE   ItemPixelsY;
+	UBYTE   Data[];
 } __attribute__((__packed__)) FONT, ICON;
+
 
 UBYTE     DisplayLineString[DISP_LINES][3] =
 {
-  { 0xB0,0x10,0x00  },
+	{ 0xB0,0x10,0x00  },
 	{ 0xB1,0x10,0x00  },
 	{ 0xB2,0x10,0x00  },
 	{ 0xB3,0x10,0x00  },
@@ -46,6 +51,7 @@ UBYTE     DisplayLineString[DISP_LINES][3] =
 	{ 0xB6,0x10,0x00  },
 	{ 0xB7,0x10,0x00  }
 };
+
 
 const ICON Font = {
   // each character is 6x8 pixels represented as 6 bytes, where each byte is a "column" of 8 pixels
@@ -62,12 +68,84 @@ const ICON Font = {
   0xFC,0x44,0x44,0x44,0x38,0x00,0x38,0x44,0x44,0x44,0xFC,0x00,0x44,0x78,0x44,0x04,0x08,0x00,0x08,0x54,0x54,0x54,0x20,0x00,0x04,0x3E,0x44,0x24,0x00,0x00,0x3C,0x40,0x20,0x7C,0x00,0x00,0x1C,0x20,0x40,0x20,0x1C,0x00,0x3C,0x60,0x30,0x60,0x3C,0x00,0x6C,0x10,0x10,0x6C,0x00,0x00,0x9C,0xA0,0x60,0x3C,0x00,0x00,0x64,0x54,0x54,0x4C,0x00,0x00,0x08,0x3E,0x41,0x41,0x00,0x00,0x00,0x00,0x77,0x00,0x00,0x00,0x00,0x41,0x41,0x3E,0x08,0x00,0x02,0x01,0x02,0x01,0x00,0x00,0x10,0x20,0x40,0x38,0x07,0x00}
 };
 
+
+/****** API ******/
+
 void DisplayInit(void){
 	SPIInit();
-	// DisplayErase();
+	DisplayErase();
 }
 
-void DisplayExit(void){ return; }
+
+void DisplayExit(void){
+	DisplayInitCommands[6] 	= 0x00;
+	DisplayInitCommands[13] = 0xAE; 
+}
+
+
+void DisplayUpdateSync(void){
+
+        UBYTE i;
+        UBYTE *pImage = (UBYTE*)IOMapDisplay.DataArray;
+
+        DisplayWrite(COMMAND, (UBYTE*) DisplayInitCommands, sizeof(DisplayInitCommands));
+
+        for(i = 0; i < DISP_LINES; ++i){
+                while(!DisplayWrite(COMMAND, (UBYTE*) DisplayLineString[i], 3)){ ; }
+                while(!DisplayWrite(DATA, (UBYTE*) &pImage[i*DISPLAY_WIDTH], DISPLAY_WIDTH)){ ; }
+        }
+}
+
+
+void DisplaySetPixel(UBYTE X, UBYTE Y){
+	assert(X <= DISPLAY_WIDTH);
+	assert(Y <= DISPLAY_HEIGHT);
+	IOMapDisplay.DataArray[ 0 ][(Y / 8) * DISPLAY_WIDTH + X] |= (1 << (Y % 8));
+}
+
+
+void DisplayClrPixel(UBYTE X,UBYTE Y){
+	assert(X <= DISPLAY_WIDTH);
+	assert(Y <= DISPLAY_HEIGHT);
+	IOMapDisplay.DataArray[0][(Y / 8) * DISPLAY_WIDTH + X] &= ~(1 << (Y % 8));	
+}
+
+
+void DisplayLineX(UBYTE X1,UBYTE X2,UBYTE Y){
+
+}
+
+
+void DisplayLineY(UBYTE X,UBYTE Y1,UBYTE Y2){
+
+}
+
+
+void DisplayErase(void){
+	int x, y;
+
+	for(x = 0; x < 100; x++){
+		for(y = 0; y < 64; y++){
+			DisplayClrPixel(x, y);
+		}
+	}
+}
+
+
+void DisplayChar(UBYTE X,UBYTE Y,UBYTE Char){
+
+}
+
+
+void DisplayNum(UBYTE X,UBYTE Y,ULONG Num){
+
+}
+
+
+void DisplayString(UBYTE X,UBYTE Y,UBYTE *pString){
+
+}
+
 
 UBYTE DisplayWrite( UBYTE type, UBYTE *data, UWORD length  ){
 	if ( SPITxReady() ){
@@ -84,29 +162,4 @@ UBYTE DisplayWrite( UBYTE type, UBYTE *data, UWORD length  ){
 		return true;
 	}
 	return false;
-
-}
-
-
-void DisplayUpdateSync(void){
-	
-	UBYTE i;
-	UBYTE *pImage = (UBYTE*)IOMapDisplay.DataArray;
-
-	DisplayWrite(COMMAND, (UBYTE*) DisplayInitCommands, sizeof(DisplayInitCommands));
-
-	for(i=0;i<DISP_LINES; ++i){
-		while( DisplayWrite(COMMAND, (UBYTE*) DisplayLineString[i], 3) ){ ; }
-		while( DisplayWrite(DATA, (UBYTE*) &pImage[i*DISPLAY_WIDTH], DISPLAY_WIDTH ) ){ ; }
-	}
-}
-
-
-void DisplaySetPixel(UBYTE X,UBYTE Y){
-
-}
-
-
-void DisplayClrPixel(UBYTE X,UBYTE Y){
-	
 }
