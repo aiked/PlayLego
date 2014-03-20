@@ -3,6 +3,7 @@
 
 #include <stdconst.h>
 #include "spi.h"
+#include "aclock.h"
 
 /*
  * SPI Transmit Mode
@@ -27,5 +28,8 @@ void	DisplayLineX(UBYTE X1,UBYTE X2,UBYTE Y);
 void	DisplayLineY(UBYTE X,UBYTE Y1,UBYTE Y2);
 
 UBYTE	DisplayWrite(UBYTE type, UBYTE *data, UWORD length);
+
+void DisplayAnalogClock(UBYTE cx, UBYTE cy, UBYTE r, UBYTE hh, UBYTE mm, UBYTE ss);
+void DisplayDigitalClock(UBYTE cx, UBYTE cy, UBYTE hh, UBYTE mm, UBYTE ss);
 
 #endif

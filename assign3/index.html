@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body>
+    <div style="text-align: justify;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">CS325 Assignment 3: Analog Clock</span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><font size="-1"><br style="font-family:
+          Helvetica,Arial,sans-serif;">
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span><span style="font-family: Helvetica,Arial,sans-serif;">The
+          goal
+          of this assignment is to help you understand SPI and
+          peripheral
+          communication protcols and to more thoroughly familiarize
+          yourself with
+          the LCD and simple graphics on the LCD.</span><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;"></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;">
+        </span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;">1. Get a lego kit from the lab</span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span><span style="font-style: italic;">Return the
+          components you have used for the previous assignment. </span>For
+this
+        assignment you will need the lego nxt controller, the charger
+        for
+        the controller battery, and a usb cable. Follow the same
+        procedure as
+        for the previous assignments. </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">Copy
+        the files ~hy428/files/as3_aclock.tar.gz to your account. Create
+        a file <span style="font-style: italic;">as3_readme.txt </span>that
+        will contain the answers to questions below.<br>
+        <br>
+        <span style="font-weight: bold;">2. Serial Peripheral Interface
+          (SPI)</span><br>
+        <br>
+        You are given the following interface for SPI.<br>
+        <br style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          SPIInit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">unsigned
+          int SPITxReady(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">unsigned
+          int SPIRxReady(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;"></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">/* use PIO
+          to write len bytes from buf to SPI */</span></font><br>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">void
+          SPIWrite(UBYTE *, UBYTE);</span><br style="font-family:
+          Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">/* use
+          PIO to read len bytes from SPI into buf */<br>
+          void SPIRead(UBYTE *buf, UBYTE len);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          SPIPIOSetData(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          SPIPIOClearData(void);</span><br>
+        <br>
+        Functions SPIRead/SPIWrite will use programmed IO (PIO) to
+        manage the SPI interface, rather than DMA.<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">2.1 Implement the above API.<br>
+        2.2 Which ARM pins connect to the SPI? Which PIO registers are
+        initialized and how, before using the SPI?<br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">2.3 <span style="font-weight: bold;"><span
+            style="font-weight: bold;">(extra credit) </span></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1">Implement&nbsp;
+DMA
+        transfer functions SPIReadDMA/SPIWriteDMA using PDC (no need to
+        use
+        interrupts for handling DMA completions. Just check the
+        appropriate bit
+        in the SPI status register before initiating a fresh DMA).<br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;"> <br>
+        </span>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-weight: bold;">3. LCD<br>
+          <br>
+        </span>The manual "<span style="font-family: Courier
+          New,Courier,monospace;">03-dts-264 uc1601d.pdf</span>"
+        in the tar archive contains information about the LCD works. You
+        will
+        need parts of this manual for the next steps. You are given the
+        following API for the LCD:</font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-family:
+          monospace;"><br>
+          <br>
+        </span><span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayInit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayExit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;"></span><span
+          style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayUpdateSync(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplaySetPixel(UBYTE X,UBYTE Y);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayClrPixel(UBYTE X,UBYTE Y);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayLineX(UBYTE X1,UBYTE X2,UBYTE Y);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayLineY(UBYTE X,UBYTE Y1,UBYTE Y2);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayErase(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayChar(UBYTE X,UBYTE Y,UBYTE Char);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayNum(UBYTE X,UBYTE Y,ULONG Num);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          DisplayString(UBYTE X,UBYTE Y,UBYTE *pString);</span><span
+          style="font-family: monospace;"><br>
+          <br>
+        </span></font><font size="-1"><span style="font-family:
+          Helvetica,Arial,sans-serif;">The
+          LCD is connected to ARM via the SPI interface. Thus, all data
+          to the
+          LCD will be send using the SPIWrite function. Although we can
+          read data
+          from the LCD, in this assignment we will only be sending data
+          to it. <br>
+          <br>
+          Beyond actually dispalying data to the LCD, we need to
+          maintain an
+          internal (to the module) representation of what is displayed.
+          To
+          achieve this we will use represent the LCD as a 2-D array of
+          1-bit
+          pixels (on/off). This data structure is called IOMapDisplay
+          (in
+          display.c).<br>
+          <br>
+          3.1 Implement the functions DisplayInit, DisplayExit.
+          DisplayInit
+          should initiaize the SPI and any other internal data
+          structures.
+          DisplayExit does not need to do much at this point.<br>
+          3.2 Implement the functions DisplaySetPixel/DisplayClrPixel
+          that set/clear pixels in IOMapDisplay.<br>
+          3.3 Implement the function DisplayWrite and DisplayUpdateSync
+          that send
+          IOMapDisplay to the LCD. DisplayWrite uses the SPI to send a
+          sequence
+          of bytes to the LCD. This sequence can either be a command or
+          simply
+          data to be displayed. DisplaySyncUpdate uses DisplayWrite to
+          perform
+          the following steps:<br>
+          &nbsp;&nbsp;&nbsp; (i) send initialization commands to the LCD
+          (the string DsiplayInitCommands).<br>
+          &nbsp;&nbsp;&nbsp; (ii) send a command to set the current line
+          to be
+          displayed (our LCD is written as 8 lines of 8x100 pixels
+          each).<br>
+          &nbsp;&nbsp;&nbsp; (iii) send the data to be displayed to the
+          current line on the LCD.<br>
+          &nbsp;&nbsp;&nbsp; (iv) repeate steps (ii) and (iii) for each
+          of the 6 LCD lines.<br>
+          <br>
+          3.4 Implement the functions DisplayLineX, DisplayLineY that
+          simply draw
+          a line on the X or Y axis by setting the corresponding pixels
+          in
+          IOMapDisplay.<br>
+          3.5 Implement the function DisplayChar that plots a specific
+          character
+          in IOMapDisplay. For this you need the shape of pixels that
+          correspond
+          to each character. This is a font. File display.c contains a
+          definition
+          of such a font that you can use. Each character is 6x8 pixels.
+          Each
+          byte in the given structure represents 8 Y pixels fo a
+          character. Thus
+          each character is represented with 6 bytes. To display a
+          character on
+          IOMapDisplay, you need to find the appropriate bytes in the
+          font and
+          copy them to the appropriate pixels in IOMapDisplay.<br>
+          3.6 Implement the functions DisplayNum and DisplayString that
+          simply
+          use DisplayChar. DisplayNum should print number Num as a
+          decimal
+          number. (if you want, you can add an option to print as Hex
+          and Binary).<br>
+          3.7 Implement the function DisplayErase, that erases the full
+          display.<br>
+          <br>
+          Note that the only function that sends data to the LCD is
+          DisplayUpdateSync. All other functions simply modify
+          IOMapDisplay.<br>
+        </span><span style="font-family: monospace;">
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">4. Draw an analog clock<br>
+        </span></font><font size="-1"><span style="font-family:
+          monospace;"><br>
+        </span><span style="font-family: Helvetica,Arial,sans-serif;"></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1">To
+        draw an analog clock, you may want to use the following API:<br>
+        <br>
+        <span style="font-family: Courier New,Courier,monospace;"></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-family: Courier New,Courier,monospace;"></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">void
+          AclockDisplayFrame(UBYTE cx, UBYTE cy, UBYTE r);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          AclockDisplayHand(UBYTE cx, UBYTE cy, UBYTE r, UWORD hh);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-family: Courier
+          New,Courier,monospace;">void AclockDisplayFrameSymbol</span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-family: Courier New,Courier,monospace;">(UBYTE cx,
+          UBYTE cy, UBYTE r, UWORD hh);<br>
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">The
+        first function displays a circular clock frame of radius r
+        pixels at
+        location cx,cy. The second&nbsp; function displays a "hand"
+        between
+        (cx,cy) and the pixel at the clock frame at hh degrees from 12
+        o'clock.
+        This function will be useful to draw all clock hands. You may
+        want to
+        extend the second function with a second parameter that will
+        allow you
+        to differentiate between clock hands. The third fucntion simply
+        plots
+        at location hh on the frame a symbol (let's say a fat dot) to
+        indicate
+        hour marks (or minutes as well if you wish). To perform various
+        calculations (mainly trigonometric) you will need to use
+        &lt;math.h&gt;
+        and -lm.<br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><br>
+        4.1 Implement a module aclock.[hc] that can be used to display
+        an analog clock.<br>
+        4.2 Modify firmware.c to show both the digital clock from
+        assignment 2 and the analog clock from assignment 3.<br>
+      </font></div>
+    <div style="text-align: justify;"><font size="-1"><span
+          style="font-weight: bold; font-family:
+          Helvetica,Arial,sans-serif;"></span><span style="font-family:
+          Helvetica,Arial,sans-serif;">4.3 (extra credit) Make your
+          clock as fancier. </span><br>
+        <br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;"><span
+              style="font-weight: bold;"><span style="font-weight:
+                bold;">
+              </span></span>5. Submit</span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>Submit all files required to run the assignment
+        as a
+        single as3_aclock.tar.gz file, including all your answers using
+        the
+        submit procedure described in the policies section. Return the
+        components you used for this assignment, following the procedure
+        outlined
+        in class. </font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;"><span style="font-weight: bold;"></span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font>
+    </div>
+    <hr style="width: 100%; height: 2px; margin-left: 0px; margin-right:
+      0px;">
+    <div style="text-align: justify;">
+    </div>
+    <div style="text-align: right;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">&copy; copyright
+        University of Crete, Greece. Last Modified: Feb 15, 2009</font><font
+        size="-1"><br>
+      </font>
+    </div>
+    <div style="text-align: justify;">
+      <font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font></div>
+  </body>
+</html>

@@ -30,7 +30,8 @@ VECTOR_LOCATION = VECTORS_IN_RAM	# - Exception vectors in RAM:
 ########################################################################
 # Files
 ########################################################################
-SRC  += display.c aic.c pit.c spi.c Cstartup_SAM7.c aclock.c $(TARGET).c
+SRC  += display.c pit.c aic.c Cstartup_SAM7.c spi.c aclock.c
+SRC	 += $(TARGET).c
 ASRC  = Cstartup.S 
 COBJ  = $(SRC:.c=.o)
 AOBJ  = $(ASRC:.S=.o)
@@ -46,7 +47,7 @@ LST   = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 # !michath --print-search-paths IS -print-search-dirs
 
 # CFLAGS = -print-search-dirs
-CFLAGS +=
+CFLAGS += 
 CFLAGS += -D$(RUN_MODE) -DSAM7S256 -DPROTOTYPE_PCB_4 -D__ICCARM__ -DNEW_MENU -D__WinARM__ -D__WINARMSUBMDL_$(SUBMDL)__ \
           -mcpu=$(MCU) -Os -Wall -Wcast-align -Wimplicit -Wpointer-arith -Wswitch -Wredundant-decls \
           -Wreturn-type -Wshadow -Wunused -Wnested-externs \
@@ -89,7 +90,8 @@ endif
 #  -Wl,...:   tell GCC to pass this to linker.
 #  -Map:      create map file
 #  --cref:    add cross reference to  map file
-LDFLAGS = 
+
+LDFLAGS = -lm
 LDFLAGS += -nostartfiles -Wl,-Map=$(TARGET).map,--cref,--gc-sections
 LDFLAGS += -L$(PREFIX)/lib/thumb#/interwork -lc -lgcc -lm
 LDFLAGS += -T./$(SUBMDL)-$(RUN_MODE).ld
