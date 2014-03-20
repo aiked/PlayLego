@@ -9,7 +9,7 @@
 
 
 static struct {
-	UBYTE   DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
+	UBYTE DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
 } IOMapDisplay;
 
 
@@ -142,20 +142,26 @@ void DisplaySetPixel(UBYTE X, UBYTE Y){
 }
 
 
-void DisplayClrPixel(UBYTE X,UBYTE Y){
+void DisplayClrPixel(UBYTE X, UBYTE Y){
 	assert(X <= DISPLAY_WIDTH);
 	assert(Y <= DISPLAY_HEIGHT);
 	IOMapDisplay.DataArray[0][(Y / 8) * DISPLAY_WIDTH + X] &= ~(1 << (Y % 8));	
 }
 
 
-void DisplayLineX(UBYTE X1,UBYTE X2,UBYTE Y){
+void DisplayLineX(UBYTE X1, UBYTE X2, UBYTE Y){
+	int x;
 
+	for(x = X1; x < X2; x++)
+		IOMapDisplay.DataArray[0][Y * DISPLAY_WIDTH + x] |= (1 << (Y % 8));
 }
 
 
-void DisplayLineY(UBYTE X,UBYTE Y1,UBYTE Y2){
+void DisplayLineY(UBYTE X, UBYTE Y1, UBYTE Y2){
+	int y;
 
+	for(y = Y1; y < Y2; y++)
+		IOMapDisplay.DataArray[0][(y / 8) * DISPLAY_WIDTH + X] |= (1 << (y % 8));
 }
 
 
