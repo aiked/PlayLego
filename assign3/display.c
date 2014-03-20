@@ -3,9 +3,11 @@
 #include "display.h"
 #include "spi.h"
 
-#define   DISPLAY_HEIGHT	64	// Y pixels
-#define   DISPLAY_WIDTH		100	// X pixels
-#define   DISP_LINES		8	// (DISPLAY_HEIGHT/8)
+#define	DISPLAY_HEIGHT	64	// Y pixels
+#define	DISPLAY_WIDTH	100	// X pixels
+#define	DISP_LINES	8	// (DISPLAY_HEIGHT/8)
+#define	G_WIDTH		6	// Char width
+#define G_HEIGHT	8	// Char height
 
 
 static struct {
@@ -208,6 +210,7 @@ UBYTE DisplayWrite( UBYTE type, UBYTE *data, UWORD length  ){
 	return false;
 }
 
+
 void DisplayDigitalClock(UBYTE cx, UBYTE cy, UBYTE hh, UBYTE mm, UBYTE ss){
 	DisplayNum(cx, cy, hh/10);
 	DisplayNum(cx+6, cy, hh%10);
@@ -224,11 +227,11 @@ void DisplayDigitalClock(UBYTE cx, UBYTE cy, UBYTE hh, UBYTE mm, UBYTE ss){
 
 	}
 
-void DisplayAnalogClock(UBYTE cx, UBYTE cy, UBYTE r, UBYTE hh, UBYTE mm, UBYTE ss){
-		AclockDisplayFrame(cx, cy, r);
-		AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
-		AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
-		AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
-		AclockDisplayFrameSymbol(cx, cy, r, 0);
-}
 
+void DisplayAnalogClock(UBYTE cx, UBYTE cy, UBYTE r, UBYTE hh, UBYTE mm, UBYTE ss){
+	AclockDisplayFrame(cx, cy, r);
+	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
+	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
+	AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
+	AclockDisplayFrameSymbol(cx, cy, r, 0);
+}
