@@ -47,33 +47,34 @@ void AclockDisplayHand(UBYTE cx, UBYTE cy, UBYTE r, UWORD angle, Time_Mode_t mod
 	dir = (double)((y-cy)/(x-cx));
 	idir = (double)((x-cx)/(y-cy));
 
+
 	if(x-cx>0){
 		for(i=cx;i<x;++i){ 
-			if((mode==HOUR)&&(i>(x+cx)/2)) { DisplaySetPixel(i, dir*(i-cx)+cy); } 
+			if((mode==HOUR)&&(i<(x+cx)/2)) { DisplaySetPixel(i, (dir*(i-cx))+cy); } 
 			if(mode==MIN){ DisplaySetPixel(i, dir*(i-cx)+cy); }
-			if((mode==SEC)&&(i%3>1)){ DisplaySetPixel(i, dir*(i-cx)+cy); }
+			if((mode==SEC)&&(i%4>1)){ DisplaySetPixel(i, (dir*(i-cx))+cy); }
 		}
 	}
 	else{
-		for(i=cx;i<x;++i){ 
-			if((mode==HOUR)&&(i>(x+cx)/2)){ DisplaySetPixel(i, dir*(i-x)+y); } 
+		for(i=x;i<cx;++i){ 
+			if((mode==HOUR)&&(i>(x+cx)/2)){ DisplaySetPixel(i, (dir*(i-x))+y); } 
 			if(mode==MIN){ DisplaySetPixel(i, dir*(i-x)+y); }
-			if((mode==SEC)&&(i%3>1)){ DisplaySetPixel(idir*(i-y)+x, i); }
+			if((mode==SEC)&&(i%4>1)){ DisplaySetPixel(i, (dir*(i-x))+y); }
 		}
 	}
 
 	if(y-cy>0){
 		for(i=cy;i<y;++i){ 
-			if((mode==HOUR)&&(i>(x+cx)/2)){ DisplaySetPixel(idir*(i-cy)+cx, i); } 
-			if(mode==MIN){ DisplaySetPixel(idir*(i-cy)+cx, i); }
-			if((mode==SEC)&&(i%3>1)){ DisplaySetPixel(idir*(i-cy)+cx, i); }
+			if((mode==HOUR)&&(i<(y+cy)/2)){ DisplaySetPixel( (idir*(i-cy))+cx, i); } 
+			if(mode==MIN){ DisplaySetPixel( (idir*(i-cy))+cx, i); }
+			if((mode==SEC)&&(i%4>1)){ DisplaySetPixel( (idir*(i-cy))+cx, i); }
 		} 
 	}
 	else{
 		for(i=y;i<cy;++i){ 
-			if((mode==HOUR)&&(i>(x+cx)/2)){ DisplaySetPixel(i, dir*(i-cx)+cy); } 
-			if(mode==MIN){ DisplaySetPixel(idir*(i-y)+x, i); }
-			if((mode==SEC)&&(i%3>1)){ DisplaySetPixel(idir*(i-y)+x, i); }
+			if((mode==HOUR)&&(i>(y+cy)/2)){ DisplaySetPixel((idir*(i-y))+x, i); } 
+			if(mode==MIN){ DisplaySetPixel((idir*(i-y))+x, i); }
+			if((mode==SEC)&&(i%4>1)){ DisplaySetPixel((idir*(i-y))+x, i); }
 		} 
 	}
 }

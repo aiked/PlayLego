@@ -1,9 +1,7 @@
 #ifndef _ACLOCK_H_
 #define _ACLOCK_H_
 
-#include <stdio.h>
 #include <math.h>
-
 #include "display.h"
 
 typedef enum { HOUR, MIN, SEC } Time_Mode_t;

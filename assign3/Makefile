@@ -30,8 +30,7 @@ VECTOR_LOCATION = VECTORS_IN_RAM	# - Exception vectors in RAM:
 ########################################################################
 # Files
 ########################################################################
-SRC  += display.c pit.c aic.c Cstartup_SAM7.c spi.c aclock.c
-SRC	 += $(TARGET).c
+SRC  += display.c Cstartup_SAM7.c spi.c pit.c aic.c aclock.c $(TARGET).c
 ASRC  = Cstartup.S 
 COBJ  = $(SRC:.c=.o)
 AOBJ  = $(ASRC:.S=.o)
@@ -93,7 +92,7 @@ endif
 
 LDFLAGS = -lm
 LDFLAGS += -nostartfiles -Wl,-Map=$(TARGET).map,--cref,--gc-sections
-LDFLAGS += -L$(PREFIX)/lib/thumb#/interwork -lc -lgcc -lm
+LDFLAGS += -lm -L$(PREFIX)/lib/thumb#/interwork -lc -lgcc -lm
 LDFLAGS += -T./$(SUBMDL)-$(RUN_MODE).ld
 
 ########################################################################

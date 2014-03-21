@@ -2,18 +2,18 @@
 #define   DISPLAY
 
 #include <stdconst.h>
-#include "spi.h"
 #include "aclock.h"
-
+#include "spi.h"
 /*
  * SPI Transmit Mode
  * COMMAND: Clears Data
  * DATA: Sets Data
  */
-enum { COMMAND, DATA } SPI_Mode;
 
 #define true 1
 #define false 0
+
+#define FANCY_FACTOR 7
 
 void	DisplayInit(void);
 void	DisplayExit(void);

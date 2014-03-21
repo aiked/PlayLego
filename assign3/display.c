@@ -1,7 +1,5 @@
-#include "assert.h"
 #include "AT91SAM7S256.h"
 #include "display.h"
-#include "spi.h"
 
 #define	DISPLAY_HEIGHT	64	// Y pixels
 #define	DISPLAY_WIDTH	100	// X pixels
@@ -9,6 +7,8 @@
 #define	G_WIDTH		6	// Char width
 #define G_HEIGHT	8	// Char height
 
+#define COMMAND 0
+#define DATA		1
 
 static struct {
 	UBYTE DataArray[DISPLAY_HEIGHT / 8][DISPLAY_WIDTH];
@@ -138,15 +138,11 @@ void DisplayUpdateSync(void){
 
 
 void DisplaySetPixel(UBYTE X, UBYTE Y){
-	assert(X <= DISPLAY_WIDTH);
-	assert(Y <= DISPLAY_HEIGHT);
 	IOMapDisplay.DataArray[ 0 ][(Y / 8) * DISPLAY_WIDTH + X] |= (1 << (Y % 8));
 }
 
 
 void DisplayClrPixel(UBYTE X, UBYTE Y){
-	assert(X <= DISPLAY_WIDTH);
-	assert(Y <= DISPLAY_HEIGHT);
 	IOMapDisplay.DataArray[0][(Y / 8) * DISPLAY_WIDTH + X] &= ~(1 << (Y % 8));	
 }
 
@@ -261,8 +257,8 @@ void DisplayDigitalClock(UBYTE cx, UBYTE cy, UBYTE hh, UBYTE mm, UBYTE ss){
 
 void DisplayAnalogClock(UBYTE cx, UBYTE cy, UBYTE r, UBYTE hh, UBYTE mm, UBYTE ss){
 	AclockDisplayFrame(cx, cy, r);
-//	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
-//	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
-//	AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
+	AclockDisplayHand(cx, cy, r, HOUR2DEG(hh), HOUR);
+	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(mm), MIN);
+	AclockDisplayHand(cx, cy, r, MIN_SEC2DEG(ss), SEC);
 	AclockDisplayFrameSymbol(cx, cy, r, 0);
 }
