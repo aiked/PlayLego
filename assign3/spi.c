@@ -74,7 +74,7 @@ void SPIWrite(UBYTE *data, UBYTE length){
 	}
 }
 
-/*
+
 void SPIRead(UBYTE *data, UBYTE length){
 	UBYTE i;
 
@@ -84,7 +84,7 @@ void SPIRead(UBYTE *data, UBYTE length){
 		data[i] = (*AT91C_SPI_RDR & AT91C_SPI_RD); 
 	}
 }
-*/
+
 
 void SPIWriteDMA(UBYTE *data, UBYTE length){
 	
@@ -97,7 +97,7 @@ void SPIWriteDMA(UBYTE *data, UBYTE length){
 }
 
 
-/*
+
 void SPIReadDMA(UBYTE *data, UBYTE length){
 	
 	// Loop until Receive is possible
@@ -107,4 +107,3 @@ void SPIReadDMA(UBYTE *data, UBYTE length){
 	*AT91C_SPI_RPR = (unsigned int)data;
 	*AT91C_SPI_RCR = (unsigned int)length;
 }
-*/
