@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body>
+    <div style="text-align: justify; font-family:
+      Helvetica,Arial,sans-serif;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">CS325 Assignment 4: Peripheral Monitor</span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><br>
+          <br>
+        </span></font><font size="-1">
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span>The goal
+        of this assignment is to help you understand I2C and to allow
+        you control over input/output ports. <span style="font-weight:
+          bold;"></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;">
+        </span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+        <span style="font-weight: bold;"><span style="font-weight:
+            bold;">1. Get a lego kit from the lab</span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span><span style="font-style: italic;">Return the
+          components you have used for the previous assignment. </span>For
+this
+        assignment you will need the lego nxt controller, the charger
+        for
+        the controller battery, a usb cable, and the following sensors:
+        light, mic, touch, motor. Follow the same procedure as
+        for the previous assignments. </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">Copy
+        the files ~hy428/files/as4_monitor.tar.gz to your account.
+        Create a file <span style="font-style: italic;">as4_readme.txt
+        </span>that will contain the answers to questions below.<br>
+        <br>
+        <span style="font-weight: bold;">2. I2C<br>
+          <br>
+        </span>You are given the following API:<br>
+        <br>
+        <span style="font-family: Courier New,Courier,monospace;">void
+          I2CInit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          I2CExit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          I2CTransfer(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          I2CCtrl(enum power_t);</span><br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1">2.1 Make sure your main calls the given HardwareInit()
+        function. Why is this necessary?<br>
+        2.2. Implement function I2CTransfer. This function&nbsp; <span
+          style="font-style: italic;">initiates </span>a
+        send or receive transaction over I2C. It can be called as
+        frequently as
+        the program wants, however, a transfer will initiate only after
+        TIMEOUT
+        time units (e.g. 2ms) have elapsed from the previous transfer.
+        The
+        function alternates between send and receive transactions. Each
+        send or
+        receive transaction sends or receives the corresponding buffer
+        (IoToAvr, IoFromAvr). The first transaction that is performed by
+        I2CTransfer() has to be the special "hello" transaction.
+        I2CTransfer()
+        only intitiates a transaction using the functions DataTxInit()
+        and
+        DataRxInit(). Each of these functions&nbsp; performs the
+        actual&nbsp;
+        transaction initiation. The transaction will continue in an
+        interrupt
+        handler when after each byte is sent or received. Remember that
+        besides
+        the data, each transaction needs to use a checksum. Also, the
+        interrupt
+        handler will need to deal with possible errors. The
+        implementation of
+        I2CTransfer, DataTx/RxInit, and the handler are essentially a
+        state
+        machine that you will need to design and implement.<br>
+        2.3 Implelment function I2CCtrl(). This function sets the power
+        parameter/mode in AVR and allows the controller to run in
+        regular mode,
+        sets the controller to reprogram mode, or powers the controller
+        down.<br>
+        <br>
+        <span style="font-weight: bold;">3. Buttons<br>
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">You are given the
+        following API:<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-family: Courier
+          New,Courier,monospace;">void&nbsp;&nbsp; ButtonInit(void);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;
+          ButtonExit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">enum
+          button_t&nbsp; ButtonRead(void);</span><br>
+        <br>
+      </font><font size="-1">3.1 Implelment this API. ButtonInit simply
+        initializes the button variable in IoFromAvr. ButtonRead()
+        returns the
+        last button that was pressed when the last I2C transfer from AVR
+        to ARM
+        occured.<br>
+        3.2 Modify your firmware to display on the LCD the button
+        pressed.<br>
+        3.3 Fill in led.c to turn on/off the led in the light sensor
+        when buttons are pressed.<br>
+        3.4 Modify your firmware to go in reprogram mode when pressing
+        the ENTER button and to shutdown when pressing the EXIT button.<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-weight: bold;">4. Input Ports<br>
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">You are given the
+        following API:<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-family: Courier
+          New,Courier,monospace;">void InputInit(void);</span><br
+          style="font-family: Courier New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          InputExit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void
+          InputGetSensorValue(UWORD *value, UBYTE port);</span><br>
+        <br>
+        4.1 Implement InputInit(). This function remembers in a
+        structure which
+        sensor is connected to which input port. This configuration is
+        static
+        and you will need to modify this function whenever you change
+        sensor
+        connectivity.<br>
+        4.2 Implement InputGetSensorValue(). This function returns the
+        value that was last read from AVR for the specified port.<br>
+        4.3 Modify your firmware to display the sensor names and the
+        current value for each sensor.<br>
+      </font><font size="-1"><br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-weight: bold;">5. Output Ports<br>
+          <br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">You are given the
+        following API:<br>
+        <br>
+      </font><font style="font-family: Helvetica,Arial,sans-serif;"
+        size="-1"><span style="font-weight: bold;"></span><span
+          style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          OutputInit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          OutputExit(void);</span><br style="font-family: Courier
+          New,Courier,monospace;">
+        <span style="font-family: Courier New,Courier,monospace;">void&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          OutputSetSpeed (UBYTE MotorNr, SBYTE Speed);</span><br>
+        <span style="font-weight: bold;"></span></font><font size="-1"><span
+          style="font-weight: bold;"><br>
+        </span>5.1 Implement OutputInit(). This function merely
+        initializes IoToAvr.<br>
+        5.2 Implement OutputSetSpeed(); This function sets in IoToAvr
+        the correct values for each motor.<br>
+        5.3 Modify you firmware to display the speed set for each motor.<br>
+        <span style="font-weight: bold;"><br>
+        </span></font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;">6. Extra credit </span></font></div>
+    <div style="text-align: justify; font-family:
+      Helvetica,Arial,sans-serif;"><font size="-1"><br>
+        6.1 For each sensor provide functions that return meaningful
+        values.
+        E.g. for the touch sensor TRUE when pressed and FALSE otherwise
+        (easy),
+        for the light sensor values that correspond to light intensity
+        and
+        specific colors (via their light intensity in a specific
+        environment),
+        for the mic to recognize specific sounds (in noisy environments
+        too).<br>
+        6.2 Write simple functions that would move the lego
+        forward/reverse </font><font size="-1">and turn it left/right</font><font
+        size="-1"> using two motors (to try this you will need to build
+        a simple moving project -- go for it!).<br>
+        6.3 Make the sensors "interract" e.g. the led to turn on/off on
+        specific sounds or the motors to start/stop based on specific
+        sensor
+        input/commands.<br>
+        <br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;"><span
+              style="font-weight: bold;"><span style="font-weight:
+                bold;">
+              </span></span>7. </span></span></font><font
+        style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">Submit</span></span></font><font
+        size="-1">
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span></font><font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1"><span
+          style="font-weight: bold;"><span style="font-weight: bold;">
+          </span></span>Submit all files required to run the assignment
+        as a
+        single as4_monitor.tar.gz file, including all your answers using
+        the
+        submit procedure described in the policies section. Return the
+        components you used for this assignment, following the procedure
+        outlined
+        in class. </font><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1"><span style="font-weight:
+          bold;"><span style="font-weight: bold;"></span></span></font><font
+        size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font>
+    </div>
+    <hr style="width: 100%; height: 2px; margin-left: 0px; margin-right:
+      0px; font-family: Helvetica,Arial,sans-serif;">
+    <div style="text-align: justify; font-family:
+      Helvetica,Arial,sans-serif;">
+    </div>
+    <div style="text-align: right; font-family:
+      Helvetica,Arial,sans-serif;"><font style="font-family:
+        Helvetica,Arial,sans-serif;" size="-1">&copy; copyright
+        University of Crete, Greece. Last Modified: Feb 15, 2009</font><font
+        size="-1"><br>
+      </font>
+    </div>
+    <div style="text-align: justify; font-family:
+      Helvetica,Arial,sans-serif;">
+      <font size="-1"><br>
+      </font>
+      <font style="font-family: Helvetica,Arial,sans-serif;" size="-1">
+      </font></div>
+  </body>
+</html>
