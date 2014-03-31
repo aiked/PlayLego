@@ -4,6 +4,7 @@
 #include  <assert.h>
 #include  "i2c.h"
 #include  "arm2avr.h"
+#include  "aic.h"
 
 #define BYTES_TO_TX     sizeof(IOTOAVR)
 #define BYTES_TO_RX     sizeof(IOFROMAVR)
@@ -20,12 +21,17 @@ const   UBYTE CopyrightStr[] = {"\xCC"COPYRIGHTSTRING};
 #define pimr (*AT91C_PITC_PIMR & AT91C_PITC_CPIV)
 #define DISABLEI2cIrqs *AT91C_TWI_IDR = 0x000001C7
 
+// User defines
+#define S_BUF 100
+#define MSTR_MOD_RD ((unsigned int) 0x01 << 12)
+#define MSTR_MOD_WR ((unsigned int) 0x00 << 12)
+
 // extern at arm2avr.h
 IOTOAVR IoToAvr;
 IOFROMAVR IoFromAvr;
 
 // send/receive state machine variables
-static enum state_t { TxStart,
+static enum state_t { Init,
 											TxWait,
 											Tx,
 											Rx,
@@ -33,27 +39,129 @@ static enum state_t { TxStart,
 
 static enum state_t volatile State;
 
-void DataTxInit(UBYTE *buf, UBYTE len) {
-  return;
-}  
+// For I2C_transfer to know to Init() or not 
+static UBYTE st_Init = 0;
 
-void DataRxInit(void) {
+// Buffers for ToAvr & FromAvr
+UBYTE buf_Tx[S_BUF];
+UBYTE buf_Rx[S_BUF];
 
-  return;
+// Counters
+unsigned int SumBytes; 
+unsigned int CntBytes;
+
+/* ------ Supporting Functions ------------- */
+UBYTE chkSum( UBYTE *buf, UBYTE len ){
+	UBYTE i, retval=0;
+	for(i=0;i<len;++i){ retval += buf[i]; }
+	return ~retval;
 }
 
-__ramfunc void I2cHandler(void) {
+/* ------------- Functions -------------------------------*/
 
-  return;
+__ramfunc void I2cHandler(void) {
+	
+	if( (State=TxWait) && ( (*AT91C_TWI_SR & AT91C_TWI_TXRDY)!=0 )){
+		
+		*AT91C_TWI_THR = buf_Tx[CntBytes];
+		++CntBytes;
+
+		// Last byte of stream
+		if( CntBytes==SumBytes-1 ){
+			*AT91C_TWI_CR = AT91C_TWI_STOP;
+		}
+
+		// Stream is complete
+		if( CntBytes==SumBytes ){
+			State = Rx;
+			*AT91C_TWI_IDR |= AT91C_TWI_TXRDY;
+			return;
+		}
+
+	}
+	else if ( (State=Rx) && ( (*AT91C_TWI_SR & AT91C_TWI_RXRDY)!=0 )){
+
+		buf_Rx[CntBytes] = *AT91C_TWI_RHR;
+		++CntBytes;
+
+		// Last byte of stream
+		if( CntBytes==SumBytes-1 ){
+			*AT91C_TWI_CR = AT91C_TWI_STOP;
+		}
+
+		// Stream is complete
+		if( CntBytes==SumBytes ){
+			memcpy( &IoFromAvr, buf_Rx, sizeof(IoFromAvr) );
+			State = Tx;
+			*AT91C_TWI_IDR |= AT91C_TWI_RXRDY;
+			return;
+		}
+
+	}
+}
+
+
+void DataTxInit(UBYTE *buf, UBYTE len) {
+
+	SumBytes = len+1;
+	CntBytes = 0;
+
+	memcpy( buf_Tx, buf, len );
+	buf_Tx[len] = chkSum(buf,len);
+
+	AICInterruptEnable( AT91C_ID_TWI ,(void*)I2cHandler );
+
+	*AT91C_TWI_MMR = ( (DEVICE_ADR<<16) | MSTR_MOD_WR );
+	*AT91C_TWI_CR  = AT91C_TWI_MSEN | AT91C_TWI_START;
+	*AT91C_TWI_IER |= AT91C_TWI_TXRDY; 
+
+	return;
+}  
+
+void DataRxInit(UBYTE *buf, UBYTE len) {
+
+	SumBytes = len+1;
+	CntBytes = 0;
+
+	AICInterruptEnable( AT91C_ID_TWI ,(void*)I2cHandler);
+
+	*AT91C_TWI_MMR = ( (DEVICE_ADR<<16) | MSTR_MOD_RD );
+	*AT91C_TWI_CR  = AT91C_TWI_MSEN | AT91C_TWI_START;
+	*AT91C_TWI_IER |= AT91C_TWI_RXRDY; 
+
+	return;
 }
 
 void I2CTransfer(void) {
 
-  return;
+	// Init the I2C
+	if (st_Init){	
+		DataTxInit((UBYTE*)CopyrightStr, sizeof(CopyrightStr));
+		State   = TxWait;
+		st_Init = 0;
+		// Init the time
+	}
+	
+	if (I2CheckTime()){
+		switch(State){
+			case Tx:
+				DataTxInit( (UBYTE*) &IoToAvr, BYTES_TO_TX);
+				State = TxWait;
+				break;
+			case Rx:
+				DataRxInit( (UBYTE*) &IoFromAvr, BYTES_TO_RX);
+				State = RxWait;
+				break;
+			default:
+				return;
+		}
+	}
+
+	return;
 }
 
 void I2CCtrl (enum power_t p) {
-
+	IoToAvr.Power = p;
   return;
 }
 
@@ -100,6 +208,9 @@ void I2CInit(void) {
   *AT91C_AIC_IECR   = (1L<<AT91C_ID_TWI);               /* Enables AIC irq */
 
   IoToAvr.Power     = 0;
+
+	// Theory michath
+	//st_i2c = Init;
 
   return;
 }
