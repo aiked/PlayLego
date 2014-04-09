@@ -1,6 +1,10 @@
 #ifndef   _BUTTON_H_
 #define   _BUTTON_H_
 
+#include <stdconst.h>
+
+#include "arm2avr.h"
+
 enum button_t {
   BUTTON_NONE,
   BUTTON_LEFT,

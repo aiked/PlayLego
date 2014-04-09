@@ -1,6 +1,9 @@
 #ifndef _ARM2AVR_H_
 #define _ARM2AVR_H_
 
+#include <stdlib.h>
+#include <stdconst.h>
+
 enum {
   NOS_OF_AVR_OUTPUTS  = 4,
   NOS_OF_AVR_BTNS     = 4,

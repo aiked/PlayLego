@@ -16,28 +16,29 @@
 
 int main(void) {
 
-	//	LedSwitchOn(2);
+//	LedSwitchOn(2);
 	HardwareInit(); // need this to init PIOA clock
-  DisplayInit(); 
-  PITEnable();
-  AICInit();
-  SoundInit();
-  I2CInit();
-//  InputInit();
-//  ButtonInit();
-//  OutputInit();
+	DisplayInit(); 
+	PITEnable();
+	AICInit();
+	SoundInit();
+	I2CInit();
+//	InputInit();
+	ButtonInit();
+	OutputInit();
 
-  while(1) {
-    I2CTransfer();
-  }
+	while(1) {
+		I2CTransfer();
+	}
 /*
-  ButtonExit();
-  InputExit();
-  I2CExit();
-  PITInterruptDisable();
-  PITDisable();
-  SoundExit();
-  DisplayExit();
+	ButtonExit();
+	InputExit();
+	I2CExit();
+	PITInterruptDisable();
+	PITDisable();
+	SoundExit();
+	DisplayExit();
 */
-  return 0;
+
+	return 0;
 }

@@ -30,7 +30,7 @@ VECTOR_LOCATION = VECTORS_IN_RAM	# - Exception vectors in RAM:
 ########################################################################
 # Files
 ########################################################################
-SRC  += display.c Cstartup_SAM7.c spi.c pit.c aic.c i2c.c sound.c 
+SRC  += display.c Cstartup_SAM7.c spi.c pit.c aic.c i2c.c sound.c button.c output.c 
 SRC  += hwinit.c $(TARGET).c
 ASRC  = Cstartup.S 
 COBJ  = $(SRC:.c=.o)
