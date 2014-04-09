@@ -39,6 +39,7 @@ static enum state_t {
 	RxWait
 };
 
+static ULONG I2Ctimer;
 static enum state_t volatile State;
 
 // For I2C_transfer to know to Init() or not 
@@ -61,6 +62,25 @@ UBYTE chkSum( UBYTE *buf, UBYTE len ){
 	return ~retval;
 }
 
+inline
+I2cDoTime(void)
+{
+	I2Ctimer = piir;
+}
+
+
+inline int
+I2CheckTime(void)
+{
+	if(TIMEOUT < ((piir - I2Ctimer) & AT91C_PITC_CPIV))
+		{
+		return TRUE;
+		}
+	else
+		{
+		return FALSE;
+		}
+}
 
 /* ------------- Functions -------------------------------*/
 

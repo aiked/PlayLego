@@ -20,6 +20,7 @@ int main(void) {
 	HardwareInit(); // need this to init PIOA clock
 	DisplayInit(); 
 	PITEnable();
+//	*AT91C_PITC_PIMR |= AT91C_PITC_PITEN;
 	AICInit();
 	SoundInit();
 	I2CInit();
@@ -29,6 +30,8 @@ int main(void) {
 
 	while(1) {
 		I2CTransfer();
+		DisplayString(0, 0, "pass");
+		DisplayUpdateSync();
 	}
 /*
 	ButtonExit();

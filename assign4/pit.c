@@ -5,8 +5,7 @@
 #define PIV_1_SEC 3000000
 
 void PITEnable(void){
-				     /*	0x1 << 24     |	     0x1 << 25 */
-	*AT91C_PITC_PIMR = AT91C_PITC_PITEN | AT91C_PITC_PITIEN;
+	*AT91C_PITC_PIMR |= AT91C_PITC_PITEN;
 }
 
 
@@ -43,7 +42,7 @@ void PITAckInterrupt(void){
 	*AT91C_AIC_EOICR = 0x1;
 }
 
-
+/*
 UWORD PITTicks2ms(ULONG ticks){
   return ticks / 3000;
 }
@@ -66,4 +65,4 @@ void spindelayms(ULONG ms){
 		}
 	}
 }
-
+*/
