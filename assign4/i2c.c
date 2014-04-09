@@ -31,11 +31,13 @@ IOTOAVR IoToAvr;
 IOFROMAVR IoFromAvr;
 
 // send/receive state machine variables
-static enum state_t { Init,
-											TxWait,
-											Tx,
-											Rx,
-											RxWait };
+static enum state_t {
+	Init,
+	TxWait,
+	Tx,
+	Rx,
+	RxWait
+};
 
 static enum state_t volatile State;
 
@@ -50,12 +52,15 @@ UBYTE buf_Rx[S_BUF];
 unsigned int SumBytes; 
 unsigned int CntBytes;
 
+
 /* ------ Supporting Functions ------------- */
+
 UBYTE chkSum( UBYTE *buf, UBYTE len ){
 	UBYTE i, retval=0;
 	for(i=0;i<len;++i){ retval += buf[i]; }
 	return ~retval;
 }
+
 
 /* ------------- Functions -------------------------------*/
 
@@ -118,6 +123,7 @@ void DataTxInit(UBYTE *buf, UBYTE len) {
 	return;
 }  
 
+
 void DataRxInit(UBYTE *buf, UBYTE len) {
 
 	SumBytes = len+1;
@@ -131,6 +137,7 @@ void DataRxInit(UBYTE *buf, UBYTE len) {
 
 	return;
 }
+
 
 void I2CTransfer(void) {
 
@@ -160,15 +167,16 @@ void I2CTransfer(void) {
 	return;
 }
 
+
 void I2CCtrl (enum power_t p) {
 	IoToAvr.Power = p;
-  return;
+	return;
 }
 
-#define WAITClk(t) {\
-	  ULONG pit = piir + (t);\
-          if (pit >= pimr) pit -= pimr;\
-          while (piir < pit){;}\
+#define WAITClk(t) {			\
+	  ULONG pit = piir + (t);	\
+          if (pit >= pimr) pit -= pimr;	\
+          while (piir < pit){;}		\
         }
 
 void I2CInit(void) { 
