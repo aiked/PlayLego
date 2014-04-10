@@ -1,5 +1,5 @@
-#ifndef _INPUTMANAGER_H
-#define _INPUTMANAGER_H
+#ifndef _PERIPHERALS_H
+#define _PERIPHERALS_H
 
 #include <stdconst.h>
 #include "button.h"
@@ -22,9 +22,12 @@ typedef enum sensor_mic_states_t{
 	L_CLASSIC	// noise off
 } mic_state;
 
-void manageTouch( UWORD in );
-void manageMic( UWORD in );
-void manageLight( UWORD in );
-void manageButton( button_state button_val );
+void printTouch( UWORD in );
+void printMic( UWORD in );
+void printLight( UWORD in );
+void printButton( button_state button_val );
+void printMotors( SBYTE speed );
+
+void handleMotors( IOTOAVR IoToAvr, IOFROMAVR IoFromAvr );
 
 #endif

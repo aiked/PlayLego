@@ -11,7 +11,7 @@
 #include "button.h"
 #include "output.h"
 #include "led.h"
-#include "inputManager.h"
+#include "peripherals.h"
 
 //#include "aclock.h"
 
@@ -24,7 +24,7 @@ int main(void) {
 	AICInit();
 	SoundInit();
 	I2CInit();
-//	InputInit();
+	InputInit();
 	ButtonInit();
 	OutputInit();
 
@@ -32,6 +32,14 @@ int main(void) {
 	touch_state 	touch_val;
 	mic_state			mic_val;
 	light_state		light_val;
+
+	UBYTE					motorNr;
+	SBYTE					motor_speed;
+
+	motorNr = 1;
+	motor_speed = 50;
+
+	OutputSetSpeed(motorNr, motor_speed);
 
 	while(1) {
 		I2CTransfer();
@@ -43,17 +51,25 @@ int main(void) {
 		 *	Lego trips as hell
 		 *	REAL pain to reset!!
 		 */
+
+		/*
+		 * from: michath
+		 * bitches be tripping
+		 */
+
 		button_val = ButtonRead();
-		manageButton(button_val);
+		printButton(button_val);
 
 		touch_val = InputGetSensorValue(PORT_TOUCH);
-		manageTouch(touch_val);
+		printTouch(touch_val);
 
 		mic_val = InputGetSensorValue(PORT_MIC);
-		manageMic(mic_val);
+		printMic(mic_val);
 
 		light_val = InputGetSensorValue(PORT_LIGHT);
-		manageLight(light_val);
+		printLight(light_val);
+
+		printMotors(motor_speed);
 
 		DisplayUpdateSync();
 	}

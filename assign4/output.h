@@ -3,6 +3,7 @@
 
 #define	  MAX_SPEED_FW (100)
 #define	  MAX_SPEED_RW (-MAX_SPEED_FW)
+#define		SPEED_ZERO   (0)
 
 void      OutputInit(void);
 void      OutputExit(void);
