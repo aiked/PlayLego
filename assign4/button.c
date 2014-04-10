@@ -23,6 +23,10 @@ ButtonRead(void)
 {
 	UWORD val = IoFromAvr.Buttons;
 
+ DisplayNum(1, 0, 10, val);
+        DisplayUpdateSync();
+
+
 	if(val == 0)
 		return BUTTON_NONE;
 	else if((val > 0x187) && (val < 0x1A6))

@@ -28,9 +28,15 @@ int main(void) {
 	ButtonInit();
 	OutputInit();
 
+	enum button_t button_val;
+
 	while(1) {
 		I2CTransfer();
 		DisplayString(0, 0, "pass");
+		
+		button_val = ButtonRead();
+		DisplayNum(1, 0, 20, button_val);
+
 		DisplayUpdateSync();
 	}
 /*
