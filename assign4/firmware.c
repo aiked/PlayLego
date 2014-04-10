@@ -20,7 +20,6 @@ int main(void) {
 	HardwareInit(); // need this to init PIOA clock
 	DisplayInit(); 
 	PITEnable();
-//	*AT91C_PITC_PIMR |= AT91C_PITC_PITEN;
 	AICInit();
 	SoundInit();
 	I2CInit();
@@ -32,10 +31,32 @@ int main(void) {
 
 	while(1) {
 		I2CTransfer();
-		DisplayString(0, 0, "pass");
-		
+		DisplayErase();
+
+		/* Button Stuff */
 		button_val = ButtonRead();
-		DisplayNum(1, 0, 20, button_val);
+		DisplayString(0, 0, "Button Pressed:");
+		switch(button_val)
+			{
+			case BUTTON_RIGHT:
+				DisplayString(0, 10, "Right");
+				break;
+			case BUTTON_LEFT:
+				DisplayString(0, 10, "Left");
+				break;
+			case BUTTON_ENTER:
+				DisplayString(0, 10, "Enter");
+				break;
+			case BUTTON_EXIT:
+				DisplayString(0, 10, "Exit");
+				break;
+			case BUTTON_NONE:
+				DisplayString(0, 10, "None");
+				break;
+			default:
+				DisplayString(0, 10, "Combo");
+				break;
+			}
 
 		DisplayUpdateSync();
 	}
