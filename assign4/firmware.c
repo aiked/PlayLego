@@ -33,7 +33,12 @@ int main(void) {
 		I2CTransfer();
 		DisplayErase();
 
-		/* Button Stuff */
+		/* Button Stuff 
+		 *	ATTENTION!!!!!!!!!!
+		 *	Do !! NOT !! uncomment "For Task 3.4"
+		 *	Lego trips as hell
+		 *	REAL pain to reset!!
+		 */
 		button_val = ButtonRead();
 		DisplayString(0, 0, "Button Pressed:");
 		switch(button_val)
@@ -46,9 +51,13 @@ int main(void) {
 				break;
 			case BUTTON_ENTER:
 				DisplayString(0, 10, "Enter");
+				/* For Task 3.4 (trip) */
+				// IoToAvr.Power = REPROGRAM;
 				break;
 			case BUTTON_EXIT:
 				DisplayString(0, 10, "Exit");
+				/* For Task 3.4 (trip) */
+				// IoToAvr.Power = POWERDOWN;
 				break;
 			case BUTTON_NONE:
 				DisplayString(0, 10, "None");
