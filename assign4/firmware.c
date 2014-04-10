@@ -11,6 +11,7 @@
 #include "button.h"
 #include "output.h"
 #include "led.h"
+#include "inputManager.h"
 
 //#include "aclock.h"
 
@@ -27,7 +28,10 @@ int main(void) {
 	ButtonInit();
 	OutputInit();
 
-	enum button_t button_val;
+	button_state 	button_val;
+	touch_state 	touch_val;
+	mic_state			mic_val;
+	light_state		light_val;
 
 	while(1) {
 		I2CTransfer();
@@ -40,32 +44,16 @@ int main(void) {
 		 *	REAL pain to reset!!
 		 */
 		button_val = ButtonRead();
-		DisplayString(0, 0, "Button Pressed:");
-		switch(button_val)
-			{
-			case BUTTON_RIGHT:
-				DisplayString(0, 10, "Right");
-				break;
-			case BUTTON_LEFT:
-				DisplayString(0, 10, "Left");
-				break;
-			case BUTTON_ENTER:
-				DisplayString(0, 10, "Enter");
-				/* For Task 3.4 (trip) */
-				// IoToAvr.Power = REPROGRAM;
-				break;
-			case BUTTON_EXIT:
-				DisplayString(0, 10, "Exit");
-				/* For Task 3.4 (trip) */
-				// IoToAvr.Power = POWERDOWN;
-				break;
-			case BUTTON_NONE:
-				DisplayString(0, 10, "None");
-				break;
-			default:
-				DisplayString(0, 10, "Combo");
-				break;
-			}
+		manageButton(button_val);
+
+		touch_val = InputGetSensorValue(PORT_TOUCH);
+		manageTouch(touch_val);
+
+		mic_val = InputGetSensorValue(PORT_MIC);
+		manageMic(mic_val);
+
+		light_val = InputGetSensorValue(PORT_LIGHT);
+		manageLight(light_val);
 
 		DisplayUpdateSync();
 	}

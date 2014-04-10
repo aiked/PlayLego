@@ -5,16 +5,16 @@
 
 #include "arm2avr.h"
 
-enum button_t {
+typedef enum button_t {
   BUTTON_NONE,
   BUTTON_LEFT,
   BUTTON_ENTER,
   BUTTON_RIGHT,
   BUTTON_EXIT 
-};
+} button_state;
 
 void   ButtonInit(void);
 void   ButtonExit(void);
-enum button_t ButtonRead(void);
+button_state ButtonRead(void);
 
 #endif

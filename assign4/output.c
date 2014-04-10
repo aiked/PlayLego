@@ -9,7 +9,7 @@ OutputInit(void)
 	UBYTE i;
 
 	IoToAvr.Power = NORMAL_OP;
-	IoToAvr.PwmFreq = 4;
+	IoToAvr.PwmFreq = 8;
 	IoToAvr.OutputMode = 0;
 	IoToAvr.InputPower = 1;
 	for(i = 0; i < 4; i++)
