@@ -37,7 +37,7 @@ int main(void) {
 	SBYTE					motor_speed;
 
 	motorNr = 1;
-	motor_speed = 50;
+	motor_speed = 100;
 
 	OutputSetSpeed(motorNr, motor_speed);
 
@@ -69,6 +69,9 @@ int main(void) {
 		light_val = InputGetSensorValue(PORT_LIGHT);
 		printLight(light_val);
 
+		OutputSetSpeed(0, motor_speed);
+		OutputSetSpeed(1, motor_speed);
+		OutputSetSpeed(2, motor_speed);
 		printMotors(motor_speed);
 
 		//handleMotors( IoToAvr, motorNr, button_val );

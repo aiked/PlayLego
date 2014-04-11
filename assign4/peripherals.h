@@ -29,6 +29,6 @@ void printLight( UWORD in );
 void printButton( button_state button_val );
 void printMotors( SBYTE speed );
 
-void handleMotors( 	IOTOAVR toAvr, UBYTE motorNr,button_state btn_val );
+void handleMotors( UBYTE motorNr,button_state btn_val );
 
 #endif

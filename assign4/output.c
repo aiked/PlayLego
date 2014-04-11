@@ -10,11 +10,13 @@ OutputInit(void)
 
 	IoToAvr.Power = NORMAL_OP;
 	IoToAvr.PwmFreq = 8;
+		for(i = 0; i < 4; ++i){
+		IoToAvr.PwmValue[i] = 0;
+		}
 	IoToAvr.OutputMode = 0;
 	IoToAvr.InputPower = 1;
-	for(i = 0; i < 4; i++)
-		IoToAvr.PwmValue[i] = 0;
 }
+
 
 
 void
@@ -45,4 +47,3 @@ void OutputSetSpeed(UBYTE MotorNr, SBYTE Speed){
 	}
 
 }
-

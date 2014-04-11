@@ -95,11 +95,6 @@ __ramfunc void I2cHandler(void) {
 		*AT91C_TWI_THR = buf_Tx[CntBytes];
 		++CntBytes;
 
-		// Last byte of stream
-		if(CntBytes == (SumBytes - 1)){
-			*AT91C_TWI_CR = AT91C_TWI_STOP;
-		}
-
 		// Stream is complete
 		if(CntBytes == SumBytes){
 			State = Rx;
@@ -107,6 +102,10 @@ __ramfunc void I2cHandler(void) {
 			return;
 		}
 
+		// Last byte of stream
+		if(CntBytes == (SumBytes - 1)){
+			*AT91C_TWI_CR = AT91C_TWI_STOP;
+		}
 	}
 	else if ((State == RxWait) && ((*AT91C_TWI_SR & AT91C_TWI_RXRDY) != 0)){
 

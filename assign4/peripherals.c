@@ -7,11 +7,11 @@
 #include <stdconst.h>
 
 #define DATA_OFFSET_X 50
-#define Y_TOUCH 36
-#define Y_LIGHT 24
+#define Y_TOUCH 28
+#define Y_LIGHT 12
 #define Y_BUTTN 0
-#define Y_MIC		12
-#define Y_MOTOR 48
+#define Y_MIC		20
+#define Y_MOTOR 50
 
 void printTouch(UWORD in){
 	DisplayString(0, Y_TOUCH, (unsigned char*)"Touch:");
@@ -26,13 +26,15 @@ void printMic(UWORD in){
 	DisplayString(0, Y_MIC, (unsigned char*)"Mic:");
 	if( in<405 )
 		DisplayString(DATA_OFFSET_X, Y_MIC, (unsigned char*)"Quiet");
+	else if( in>900 )
+		DisplayString(DATA_OFFSET_X, Y_MIC, (unsigned char*)"DC");
 	else
 		DisplayString(DATA_OFFSET_X, Y_MIC, (unsigned char*)"Loud");
 	return;
 }
 
 void printLight(UWORD in){
-	DisplayString(0, Y_LIGHT, (unsigned char*)"Mic:");
+	DisplayString(0, Y_LIGHT, (unsigned char*)"Light:");
 	if( in>515 && in<550 )
 		DisplayString(DATA_OFFSET_X, Y_LIGHT, (unsigned char*)"White");
 	else if ( in>590 &&in<620 ) 
@@ -43,6 +45,8 @@ void printLight(UWORD in){
 		DisplayString(DATA_OFFSET_X, Y_LIGHT, (unsigned char*)"Blue");
 	else if ( in>680 &&in<800 ) 
 		DisplayString(DATA_OFFSET_X, Y_LIGHT, (unsigned char*)"Black");
+	else if( in>900 )
+		DisplayString(DATA_OFFSET_X, Y_LIGHT, (unsigned char*)"DC");
 	else
 		DisplayString(DATA_OFFSET_X, Y_LIGHT, (unsigned char*)"Undef");
 	return;
@@ -79,24 +83,24 @@ void printButton(button_state button_val ){
 
 void printMotors( SBYTE speed ){
 	DisplayString( 0, Y_MOTOR, (unsigned char*)"Motor:" );
-	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR, speed);
+	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR-2, speed);
 }
 
-void handleMotors( 	IOTOAVR toAvr, UBYTE motorNr,button_state btn_val ){
+void handleMotors( UBYTE motorNr,button_state btn_val ){
 	
 	DisplayString( 0, Y_MOTOR, (unsigned char*)"Motor:" );
 
 	switch(btn_val){
 		case BUTTON_RIGHT:
-			toAvr.PwmValue[motorNr] = toAvr.PwmValue[motorNr] + 10; 
+			IoToAvr.PwmValue[motorNr] += 10; 
 			break;
 		case BUTTON_LEFT:
-			toAvr.PwmValue[motorNr] = toAvr.PwmValue[motorNr] - 10; 
+			IoToAvr.PwmValue[motorNr] -= 10; 
 			break;
 		default: 
 			break;
 	}	
-	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR, toAvr.PwmValue[motorNr]);
+	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR-2, IoToAvr.PwmValue[motorNr]);
 
 }
 
