@@ -1,7 +1,6 @@
 #include "peripherals.h"
 
 #include "display.h"
-#include "button.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -81,5 +80,23 @@ void printButton(button_state button_val ){
 void printMotors( SBYTE speed ){
 	DisplayString( 0, Y_MOTOR, (unsigned char*)"Motor:" );
 	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR, speed);
+}
+
+void handleMotors( 	IOTOAVR toAvr, UBYTE motorNr,button_state btn_val ){
+	
+	DisplayString( 0, Y_MOTOR, (unsigned char*)"Motor:" );
+
+	switch(btn_val){
+		case BUTTON_RIGHT:
+			toAvr.PwmValue[motorNr] = toAvr.PwmValue[motorNr] + 10; 
+			break;
+		case BUTTON_LEFT:
+			toAvr.PwmValue[motorNr] = toAvr.PwmValue[motorNr] - 10; 
+			break;
+		default: 
+			break;
+	}	
+	DisplayNum(1, DATA_OFFSET_X, Y_MOTOR, toAvr.PwmValue[motorNr]);
+
 }
 

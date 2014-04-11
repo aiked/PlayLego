@@ -71,6 +71,8 @@ int main(void) {
 
 		printMotors(motor_speed);
 
+		//handleMotors( IoToAvr, motorNr, button_val );
+		
 		DisplayUpdateSync();
 	}
 /*

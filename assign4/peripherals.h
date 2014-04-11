@@ -3,6 +3,7 @@
 
 #include <stdconst.h>
 #include "button.h"
+#include "arm2avr.h"
 
 typedef enum sensor_light_states_t{
 	L_WHITE,
@@ -28,6 +29,6 @@ void printLight( UWORD in );
 void printButton( button_state button_val );
 void printMotors( SBYTE speed );
 
-void handleMotors( IOTOAVR IoToAvr, IOFROMAVR IoFromAvr );
+void handleMotors( 	IOTOAVR toAvr, UBYTE motorNr,button_state btn_val );
 
 #endif
