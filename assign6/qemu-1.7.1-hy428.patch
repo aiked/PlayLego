@@ -1,0 +1,202 @@
+diff -u -r qemu-1.7.1/exec.c qemu-1.7.1.mod/exec.c
+--- qemu-1.7.1/exec.c	2014-03-25 14:01:10.000000000 +0000
++++ qemu-1.7.1.mod/exec.c	2014-05-16 18:33:18.666197663 +0000
+@@ -51,8 +51,25 @@
+ 
+ #include "exec/memory-internal.h"
+ 
++
+ //#define DEBUG_SUBPAGE
+ 
++/* HY428 Counters */
++#define HY428
++
++#ifdef HY428
++#include "hy428.h"
++
++uint64_t ReadBytes	= 0;
++uint64_t WriteBytes	= 0;
++uint64_t ReadAccess	= 0;
++uint64_t WriteAccess	= 0;
++uint64_t WA_ReadBytes	= 0;
++uint64_t WA_WriteBytes	= 0;
++uint64_t WA_ReadAccess	= 0;
++uint64_t WA_WriteAccess = 0;
++#endif /* HY428 */
++
+ #if !defined(CONFIG_USER_ONLY)
+ static int in_migration;
+ 
+@@ -1910,6 +1927,10 @@
+                 ptr = qemu_get_ram_ptr(addr1);
+                 memcpy(ptr, buf, l);
+                 invalidate_and_set_dirty(addr1, l);
++#ifdef HY428
++		hy428_increase_write_bytes(l);
++		hy428_increase_write_access();
++#endif /* HY428 */
+             }
+         } else {
+             if (!memory_access_is_direct(mr, is_write)) {
+@@ -1943,6 +1964,10 @@
+                 /* RAM case */
+                 ptr = qemu_get_ram_ptr(mr->ram_addr + addr1);
+                 memcpy(buf, ptr, l);
++#ifdef HY428
++		hy428_increase_read_bytes(l);
++		hy428_increase_read_access();
++#endif /* HY428 */
+             }
+         }
+         len -= l;
+@@ -2612,3 +2637,54 @@
+     }
+ }
+ #endif
++
++
++#ifdef HY428
++
++void
++hy428_increase_read_bytes(uint64_t bytes)
++{
++	if(ReadBytes >= (UINT64_MAX - 50)){
++		ReadBytes = 0;
++		WA_ReadBytes += 1;
++	}
++	else
++		ReadBytes += bytes;	
++}
++
++void
++hy428_increase_write_bytes(uint64_t bytes)
++{
++	if(WriteBytes >= (UINT64_MAX - 50)){
++		WriteBytes = 0;
++		WA_WriteBytes += 1;
++	}
++	else
++		WriteBytes += bytes;
++}
++
++
++void
++hy428_increase_read_access(void)
++{
++	if(ReadAccess == UINT64_MAX){
++		ReadAccess = 0;
++		WA_ReadAccess += 1;
++	}
++	else
++		ReadAccess += 1;
++}
++
++
++void
++hy428_increase_write_access(void)
++{
++	if(WriteAccess == UINT64_MAX){
++		WriteAccess = 0;
++		WA_WriteAccess += 1;
++	}
++	else
++		WriteAccess += 1;
++}
++
++#endif /* HY428 */
+diff -u -r qemu-1.7.1/vl.c qemu-1.7.1.mod/vl.c
+--- qemu-1.7.1/vl.c	2014-03-25 14:01:10.000000000 +0000
++++ qemu-1.7.1.mod/vl.c	2014-05-16 18:30:38.972861186 +0000
+@@ -174,6 +174,12 @@
+ //#define DEBUG_NET
+ //#define DEBUG_SLIRP
+ 
++#define HY428
++
++#ifdef HY428
++#include "hy428.h"
++#endif /* HY428 */
++
+ #define DEFAULT_RAM_SIZE 128
+ 
+ #define MAX_VIRTIO_CONSOLES 1
+@@ -2017,6 +2023,10 @@
+         dev_time += profile_getclock() - ti;
+ #endif
+     } while (!main_loop_should_exit());
++
++#ifdef HY428
++	hy428_exit_request();
++#endif /* HY428 */
+ }
+ 
+ static void version(void)
+@@ -4379,3 +4389,21 @@
+ 
+     return 0;
+ }
++
++#ifdef HY428
++void
++hy428_exit_request(void)
++{
++	printf("\n---------- STATS ----------\n");
++	printf("Read Bytes:\t");
++	printf("%" PRIu64 "\n", ReadBytes + (WA_ReadBytes * UINT64_MAX));
++	printf("Write Bytes:\t");
++	printf("%" PRIu64 "\n", WriteBytes + (WA_WriteBytes * UINT64_MAX));
++	printf("Read Accesses:\t");
++	printf("%" PRIu64 "\n", ReadAccess + (WA_ReadAccess * UINT64_MAX));
++	printf("Write Accesses:\t");
++	printf("%" PRIu64 "\n", WriteAccess + (WA_ReadAccess * UINT64_MAX));
++	printf("---------------------------\n");
++}
++#endif /* HY428 */
++
+--- /dev/null	2014-05-16 13:34:56.993325261 +0000
++++ qemu-1.7.1.mod/hy428.h	2014-05-16 18:31:11.956195168 +0000
+@@ -0,0 +1,44 @@
++/* Counters */
++extern uint64_t ReadBytes;
++extern uint64_t WriteBytes;
++extern uint64_t ReadAccess;
++extern uint64_t WriteAccess;
++extern uint64_t WA_ReadBytes;
++extern uint64_t WA_WriteBytes;
++extern uint64_t WA_ReadAccess;
++extern uint64_t WA_WriteAccess;
++
++/*
++ * Exit handler
++ * Print stats
++ */
++void
++hy428_exit_request(void);
++
++
++/*
++ * Increases the ReadBytes counter
++ */
++void
++hy428_increase_read_bytes(uint64_t);
++
++
++/*
++ * Increases the WriteBytes counter
++ */
++void
++hy428_increase_write_bytes(uint64_t);
++
++
++/*
++ * Increases the ReadAccess counter
++ */
++void
++hy428_increase_read_access(void);
++
++
++/*
++ * Increases the WriteAccess counter
++ */
++void
++hy428_increase_write_access(void);
