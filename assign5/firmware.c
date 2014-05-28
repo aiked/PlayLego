@@ -14,10 +14,11 @@ int main(void) {
 		DisplayErase();
 
 		btnVal = ButtonRead();
-		tchVal = InputGetSensorValue(PORT_TOUCH);
+		tchFrontVal = InputGetSensorValue(PORT_TOUCHFRONT);
+		tchBackVal = InputGetSensorValue(PORT_TOUCHBACK);
 
 		manageButton();
-		manageTouchFront();
+		manageTouch();
 		manageMotors();
 		
 		manageMonitor();

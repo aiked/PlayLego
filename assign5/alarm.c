@@ -6,14 +6,15 @@ void initAlarm(void){
 
 	HardwareInit();
 	DisplayInit(); 
-	PITEnable();
 	AICInit();
+	PITEnable();
 	SoundInit();
 	I2CInit();
 	InputInit();
 	ButtonInit();
 	OutputInit();
 
+	LED(PORT_LED,0);
 	alarmVal = IDLE;
 }
 
@@ -25,76 +26,70 @@ void manageButton(){
 				alarmVal = ARMING;
 			}
 			break;
-		case ALARMED:
-			if ( btnVal == BUTTON_ENTER ){
-				PITInterruptDisable();
+		case ALARMED_FW:
+			if ( btnVal == BUTTON_LEFT ){
 				alarmVal = IDLE;
-				panic_interrupts = 0;
+				LED(PORT_LED, 0);
+			}
+			break;
+		case ALARMED_RW:
+			if ( btnVal == BUTTON_LEFT ){
+				alarmVal = IDLE;
+				LED(PORT_LED, 0);
 			}
 			break;
 		default: break;
 	}
-
-
 }
 
 void manageMotors(void){
 	switch(alarmVal){
+		case IDLE:
+			motorSpeed = SPEED_ZERO; break;
 		case ARMING:
 			motorSpeed = MOTORSPEED; break;
-		case PANIC:
-			motorSpeed = -MOTORSPEED; break;
 		case ARMED:
 			motorSpeed = SPEED_ZERO; break;
+		case ALARMED_FW:
+			motorSpeed = MOTORSPEED; break;
+		case ALARMED_RW:
+			motorSpeed = -MOTORSPEED; break;
 		default: break;
 	}
 	
 	OutputSetSpeed(MOTOR_IN_ONE, motorSpeed);
 	OutputSetSpeed(MOTOR_IN_TWO, motorSpeed);
-	
-	return;
 }
 
-void manageTouchFront(void){
+void manageTouch(void){
 	switch(alarmVal){
 		case ARMING:
-			if(tchVal<TOUCH_LIMIT){
+				if(tchFrontVal<TOUCH_LIMIT){
 				alarmVal = ARMED;
 				LED(PORT_LED, 1);
 			}
 			break;
 		case ARMED:
-			if(tchVal>TOUCH_LIMIT){
-				alarmVal = ALARMED;
-				panic_interrupts = 0;
-				PITInterruptEnable( INTERRUPT_FREQUENCY, handler_timer_panic );
+			if(tchFrontVal>TOUCH_LIMIT){
+				alarmVal = ALARMED_RW;
 			}
 			break;
-		default: break;
-	}
-}
-
-void manageTimers( void ){
-	switch(alarmVal){
-		case ALARMED:
-			if( panic_interrupts == TIMER_PANIC_LIMIT ){
-				alarmVal = PANIC;
-			}
-			break;
-		case PANIC:
-			if( panic_interrupts % 3 == 0 )
+		case ALARMED_RW:
+			if(tchBackVal<TOUCH_LIMIT){
+				alarmVal = ALARMED_FW;
 				LED(PORT_LED,1);
-			else
-				LED(PORT_LED,0);
+			}
+			break;
+		case ALARMED_FW:
+			if(tchFrontVal<TOUCH_LIMIT){
+				alarmVal = ALARMED_RW;
+				LED(PORT_LED,1);
+			}
 			break;
 		default: break;
 	}
 }
 
-void handler_timer_panic(void){
-	++panic_interrupts;
-	PITAckInterrupt();
-}
 
 void manageMonitor(void){
 	
@@ -105,17 +100,26 @@ void manageMonitor(void){
 		case IDLE: msg_state = (unsigned char*)"State: IDLE"; break;
 		case ARMING: msg_state = (unsigned char*)"State: ARMING"; break;
 		case ARMED: msg_state = (unsigned char*)"State: ARMDED"; break;
-		case ALARMED: msg_state = (unsigned char*)"State: ALARMED"; break;
-		case PANIC: msg_state = (unsigned char*)"State: PANIC"; break;
+		case ALARMED_FW: msg_state = (unsigned char*)"State: ALARM_FW"; break;
+		case ALARMED_RW: msg_state = (unsigned char*)"State: ALARM_RW"; break;
 	}
 
-	// Touch Print
-	unsigned char *msg_touch;
-	if( tchVal < TOUCH_LIMIT ){
-		msg_touch = (unsigned char*)"Touch: ON";
+	// Touch Front Print
+	unsigned char *msg_touch_front;
+	if( tchFrontVal < TOUCH_LIMIT ){
+		msg_touch_front = (unsigned char*)"Touch Fr: ON";
 	}
 	else{
-		msg_touch = (unsigned char*)"Touch: OFF";
+		msg_touch_front = (unsigned char*)"Touch Fr: OFF";
+	}
+
+	// Touch Back Print
+	unsigned char *msg_touch_back;
+	if( tchBackVal < TOUCH_LIMIT ){
+		msg_touch_back = (unsigned char*)"Touch Ba: ON";
+	}
+	else{
+		msg_touch_back = (unsigned char*)"Touch Ba: OFF";
 	}
 
 	// Button Print
@@ -137,8 +141,12 @@ void manageMonitor(void){
 	else if( motorSpeed == -MOTORSPEED )
 		msg_motor = (unsigned char*)"MOTOR: RW";
 
+	//
+	unsigned char* msg_timer = "Timer: ";
+
 	DisplayString(MTR_STATE_X, MTR_STATE_Y, msg_state);
-	DisplayString(MTR_TOUCH_X, MTR_TOUCH_Y, msg_touch);
+	DisplayString(MTR_TOUCH_FR_X, MTR_TOUCH_FR_Y, msg_touch_front);
+	DisplayString(MTR_TOUCH_BA_X, MTR_TOUCH_BA_Y, msg_touch_back);
 	DisplayString(MTR_BUTTN_X, MTR_BUTTN_Y, msg_buttn);
 	DisplayString(MTR_MOTOR_X, MTR_MOTOR_Y, msg_motor);
 
